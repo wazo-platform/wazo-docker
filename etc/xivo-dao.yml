@@ -1,0 +1,1 @@
+db_uri: postgresql://asterisk:secret@postgres/wazo

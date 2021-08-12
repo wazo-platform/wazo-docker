@@ -1,0 +1,86 @@
+version: '3.8'
+services:
+  nginx:
+    image: nginx
+    ports:
+      - '8443:443'
+    volumes:
+      - ./etc/nginx.conf:/etc/nginx/conf.d/config.conf:ro
+      - ./certs:/certs:ro
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: wazo
+      POSTGRES_USER: asterisk  # reason: hardcoded in populate.sql
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
+    ports:
+      - "5432"
+
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - "5672"
+    volumes:
+      - type: tmpfs
+        target: /var/lib/rabbitmq
+
+  auth:
+    image: wazoplatform/wazo-auth
+    ports:
+      - 9497
+    environment:
+      TZ: America/Montreal
+      XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+    volumes:
+      - ./etc/wazo-auth.yml:/etc/wazo-auth/conf.d/config.yml:ro
+      - ./bin/init-auth:/bin/wazo-auth/init:ro
+      - ${LOCAL_GIT_REPOS}/wazo-auth:/usr/src/wazo-auth:ro  # include alembic scripts
+      - ${LOCAL_GIT_REPOS}/wazo-auth-keys/etc/wazo-auth/conf.d/50-wazo-default-policies.yml:/etc/wazo-auth/conf.d/50-wazo-default-policies.yml:ro
+    entrypoint:
+      - /bin/wazo-auth/init
+
+  confd:
+    image: wazoplatform/wazo-confd:manage-db
+    build:
+      context: .
+      dockerfile: Dockerfile-confd
+    ports:
+      - 9486
+    environment:
+      XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+    volumes:
+      - ./etc/wazo-confd.yml:/etc/wazo-confd/conf.d/config.yml:ro
+      - ./etc/xivo-dao.yml:/etc/xivo-dao/conf.d/config.yml:ro
+      - ./bin/init-confd:/bin/wazo-confd/init:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+      - ${LOCAL_GIT_REPOS}/xivo-manage-db:/usr/share/xivo-manage-db:ro
+    entrypoint:
+      - /bin/wazo-confd/init
+
+  ui:
+    image: wazoplatform/wazo-ui
+    ports:
+      - 9296
+    volumes:
+      - ./etc/wazo-ui.yml:/etc/wazo-ui/conf.d/config.yml:ro
+
+  bootstrap:
+    image: wazoplatform/uc-bootstrap
+    build:
+      context: .
+      dockerfile: Dockerfile-bootstrap
+    volumes:
+      - ./bin/init-bootstrap:/bin/platform-bootstrap/init:ro
+      - ./etc/wazo-auth-cli.yml:/etc/wazo-auth-cli/conf.d/config.yml:ro
+      - ${LOCAL_GIT_REPOS}/wazo-auth-keys/etc/wazo-auth-keys/config.yml:/etc/wazo-auth-keys/config.yml:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:rw
+    entrypoint:
+      - /bin/platform-bootstrap/init
+
+volumes:
+  pgdata:
+  wazo-auth-keys:

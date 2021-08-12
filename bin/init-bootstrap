@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -x
+
+function wait_for_wazo_auth() {
+    seconds=0
+    timeout=30
+    while [ "$seconds" -lt "$timeout" ] && ! wazo-auth-cli user list > /dev/null
+      do
+        echo -n .
+        seconds=$((seconds+1))
+        sleep 1
+      done
+}
+
+wait_for_wazo_auth
+wazo-auth-keys service update

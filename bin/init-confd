@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+set -x
+
+db_host='postgres'
+db_port='5432'
+db_name='wazo'
+db_username='asterisk'
+db_password='secret'
+db_uri="postgresql://$db_username:$db_password@$db_host:$db_port"
+
+function wait_for_postgres(){
+  timeout=60
+  seconds=0
+  while [ "$seconds" -lt "$timeout" ] && ! nc -z -w1 $db_host $db_port
+  do
+    seconds=$((seconds+1))
+    sleep 1
+  done
+
+  if [ "$seconds" -ge "$timeout" ]; then
+    exit 1
+  fi
+}
+
+wait_for_postgres
+
+# Setup database
+export ALEMBIC_DB_URI="$db_uri/$db_name"
+
+psql_cmd="psql $db_uri/$db_name"
+if ! $psql_cmd -tA $db_name $db_username --quiet -c "SELECT count(*) from infos" > /dev/null 2>&1; then
+  xivo-init-db --init \
+    --pg_db_uri "$db_uri/postgres" \
+    --owner "$db_username" \
+    --password "$db_password" \
+    --db "$db_name" \
+    --app_db_uri "$db_uri/$db_name"
+fi
+
+xivo-update-db
+
+function wait_for_key_file(){
+  timeout=60
+  seconds=0
+  while [ "$seconds" -lt "$timeout" ] && ([ ! -f /var/lib/wazo-auth-keys/wazo-confd-key.yml ] || [ ! -f /var/lib/wazo-auth-keys/wazo-wizard-key.yml ])
+  do
+    seconds=$((seconds+1))
+    sleep 1
+  done
+
+  if [ "$seconds" -ge "$timeout" ]; then
+    exit 1
+  fi
+}
+
+wait_for_key_file
+
+# Running wazo-confd
+wazo-confd
