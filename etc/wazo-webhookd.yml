@@ -1,0 +1,17 @@
+debug: true
+rest_api:
+  listen: 0.0.0.0
+
+db_uri: postgresql://asterisk:secret@postgres/wazo
+
+auth:
+  host: auth
+
+bus:
+  host: rabbitmq
+
+celery:
+  broker: amqp://guest:guest@rabbitmq:5672
+
+service_discovery:
+  enabled: false

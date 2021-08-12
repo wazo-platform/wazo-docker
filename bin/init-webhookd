@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -x
+
+function wait_for_key_file(){
+  timeout=60
+  seconds=0
+  while [ "$seconds" -lt "$timeout" ] && [ ! -f /var/lib/wazo-auth-keys/wazo-webhookd-key.yml ]
+  do
+    seconds=$((seconds+1))
+    sleep 1
+  done
+
+  if [ "$seconds" -ge "$timeout" ]; then
+    exit 1
+  fi
+}
+
+echo Waiting for key file...
+wait_for_key_file
+
+function wait_for_rabbitmq(){
+  timeout=60
+  seconds=0
+  while [ "$seconds" -lt "$timeout" ] && ! nc -z -w1 rabbitmq 5672
+  do
+    seconds=$((seconds+1))
+    sleep 1
+  done
+
+  if [ "$seconds" -ge "$timeout" ]; then
+    exit 1
+  fi
+}
+
+echo Waiting for rabbitmq...
+wait_for_rabbitmq
+
+echo Initializing amqp exchanges...
+wazo-webhookd-init-amqp --host rabbitmq
+
+wazo-webhookd

@@ -61,6 +61,43 @@ services:
     entrypoint:
       - /bin/wazo-confd/init
 
+  provd:
+    image: wazoplatform/wazo-provd
+    ports:
+      - 8666
+    volumes:
+      - ./etc/wazo-provd.yml:/etc/wazo-provd/conf.d/config.yml:ro
+      - ./bin/init-provd:/bin/wazo-provd/init:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+    entrypoint:
+      - /bin/wazo-provd/init
+
+  sysconfd:
+    image: wazoplatform/wazo-sysconfd-tests
+    build:
+      context: ${LOCAL_GIT_REPOS}/wazo-sysconfd
+      dockerfile: ${LOCAL_GIT_REPOS}/wazo-sysconfd/integration_tests/docker/Dockerfile-sysconfd-test
+    ports:
+      - 8668
+    volumes:
+      - ./etc/wazo-sysconfd.yml:/etc/wazo-sysconfd/conf.d/config.yml:ro
+
+  webhookd:
+    image: wazoplatform/wazo-webhookd:netcat
+    build:
+      context: .
+      dockerfile: Dockerfile-webhookd
+    ports:
+      - 9300
+    environment:
+      XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+    volumes:
+      - ./etc/wazo-webhookd.yml:/etc/wazo-webhookd/conf.d/config.yml:ro
+      - ./bin/init-webhookd:/bin/wazo-webhookd/init:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+    entrypoint:
+      - /bin/wazo-webhookd/init
+
   ui:
     image: wazoplatform/wazo-ui
     ports:
