@@ -6,8 +6,10 @@ db_username='asterisk'
 db_password='secret'
 db_uri="postgresql://$db_username:$db_password@postgres:5432"
 
+# TODO small check to be sure postgres up
+sleep 2
+
 # Setup database
-wazo-auth-init-db --pg_db_uri "$db_uri" --auth_db_uri "$db_uri/$db_name" --db "$db_name" --owner "$db_username" --password "$db_password"
 cd /usr/src/wazo-auth
 export ALEMBIC_DB_URI=$db_uri/$db_name
 alembic -c alembic.ini upgrade head
