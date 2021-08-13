@@ -39,6 +39,24 @@ fi
 
 xivo-update-db
 
+function wait_for_asterisk_documentation(){
+  timeout=60
+  seconds=0
+  while [ "$seconds" -lt "$timeout" ] && [ ! -f /var/lib/wazo-confd/asterisk-doc/core-en_US.xml ]
+  do
+    seconds=$((seconds+1))
+    sleep 1
+  done
+
+  if [ "$seconds" -ge "$timeout" ]; then
+    exit 1
+  fi
+}
+
+wait_for_asterisk_documentation
+wazo-asterisk-doc-extractor /var/lib/wazo-confd/asterisk-doc/core-en_US.xml > /var/lib/wazo-confd/pjsip.json
+gzip -f /var/lib/wazo-confd/pjsip.json
+
 function wait_for_key_file(){
   timeout=60
   seconds=0

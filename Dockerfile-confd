@@ -5,7 +5,9 @@ RUN true \
       alembic==1.0.0 \
       https://github.com/wazo-platform/wazo-uuid/archive/master.zip \
       https://github.com/wazo-platform/xivo-manage-db/archive/master.zip \
+      https://github.com/wazo-platform/wazo-asterisk-doc-extractor/archive/master.zip \
     && adduser --quiet --system --group --shell /bin/bash postgres \
+    && mkdir -p /var/lib/wazo-confd \
     && mkdir -p /usr/lib/xivo-manage-db \
     && ln -s /opt/venv/bin/pg-populate-db /usr/lib/xivo-manage-db/pg-populate-db \
     && apt-get update && apt-get install -y postgresql-client netcat

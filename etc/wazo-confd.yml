@@ -21,3 +21,5 @@ sysconfd:
 
 service_discovery:
   enabled: false
+
+pjsip_config_doc_filename: '/var/lib/wazo-confd/pjsip.json.gz'

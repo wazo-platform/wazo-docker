@@ -8,6 +8,7 @@ Contains docker-compose file to setup wazo-platform project
 
 * Install docker and docker-compose
 * Clone the following repositories
+    * wazo-platform/wazo-asterisk-config
     * wazo-platform/wazo-auth
     * wazo-platform/wazo-auth-keys
     * wazo-platform/wazo-sysconfd

@@ -58,6 +58,7 @@ services:
       - ./bin/init-confd:/bin/wazo-confd/init:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
       - ${LOCAL_GIT_REPOS}/xivo-manage-db:/usr/share/xivo-manage-db:ro
+      - asterisk-doc:/var/lib/wazo-confd/asterisk-doc
     entrypoint:
       - /bin/wazo-confd/init
 
@@ -95,8 +96,23 @@ services:
       - ./etc/wazo-webhookd.yml:/etc/wazo-webhookd/conf.d/config.yml:ro
       - ./bin/init-webhookd:/bin/wazo-webhookd/init:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+      - ${LOCAL_GIT_REPOS}/wazo-webhookd:/usr/src/wazo-webhookd:ro  # include alembic scripts
     entrypoint:
       - /bin/wazo-webhookd/init
+
+  ari:
+    image: wazoplatform/asterisk
+    ports:
+      - "5039"
+    volumes:
+      - ./etc/asterisk-modules.conf:/etc/asterisk/modules.conf:ro
+      - ./etc/asterisk-http.conf:/etc/asterisk/http.d/02-http.conf:ro
+      - ${LOCAL_GIT_REPOS}/wazo-asterisk-config/etc/asterisk/ari.conf:/etc/asterisk/ari.conf:ro
+      - ${LOCAL_GIT_REPOS}/wazo-asterisk-config/etc/asterisk/ari.d:/etc/asterisk/ari.d:ro
+      - ${LOCAL_GIT_REPOS}/wazo-asterisk-config/etc/asterisk/http.conf:/etc/asterisk/http.conf:ro
+      - ${LOCAL_GIT_REPOS}/wazo-asterisk-config/etc/asterisk/http.d/01-wazo.conf:/etc/asterisk/http.d/01-wazo.conf:ro
+      - asterisk-doc:/usr/share/asterisk/documentation
+    command: "asterisk -fTvvv"
 
   ui:
     image: wazoplatform/wazo-ui
@@ -121,3 +137,4 @@ services:
 volumes:
   pgdata:
   wazo-auth-keys:
+  asterisk-doc:
