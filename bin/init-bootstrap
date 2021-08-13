@@ -75,38 +75,40 @@ for n in range(retry):
     break
 EOF
 
-echo Executing wizard...
-CONFD_IP=$(dig +short confd)
-GATEWAY=$(/sbin/ip route | awk '/default/ { print $3 }')
+TENANT_NAME='my-company'
+if [[ ! $(wazo-auth-cli tenant show $TENANT_NAME) = *$TENANT_NAME* ]]; then
+  echo Executing wizard...
+  CONFD_IP=$(dig +short confd)
+  GATEWAY=$(/sbin/ip route | awk '/default/ { print $3 }')
 
-curl --silent -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d "{
-   \"admin_password\": \"secret\",
-   \"language\": \"en_US\",
-   \"license\": true,
-   \"network\": {
-     \"domain\": \"undefined\",
-     \"gateway\": \"$GATEWAY\",
-     \"hostname\": \"confd\",
-     \"interface\": \"eth0\",
-     \"ip_address\": \"$CONFD_IP\",
-     \"nameservers\": [\"1.1.1.1\"],
-     \"netmask\": \"255.255.0.0\"
-   },
-   \"steps\": {
-     \"admin\": true,
-     \"commonconf\": false,
-     \"database\": true,
-     \"manage_hosts_file\": false,
-     \"manage_resolv_file\": false,
-     \"manage_services\": false,
-     \"provisioning\": true
-   },
-   \"timezone\": \"America/Montreal\"
- }" 'http://confd:9486/1.1/wizard'
+  curl --silent -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d "{
+     \"admin_password\": \"secret\",
+     \"language\": \"en_US\",
+     \"license\": true,
+     \"network\": {
+       \"domain\": \"undefined\",
+       \"gateway\": \"$GATEWAY\",
+       \"hostname\": \"confd\",
+       \"interface\": \"eth0\",
+       \"ip_address\": \"$CONFD_IP\",
+       \"nameservers\": [\"1.1.1.1\"],
+       \"netmask\": \"255.255.0.0\"
+     },
+     \"steps\": {
+       \"admin\": true,
+       \"commonconf\": false,
+       \"database\": true,
+       \"manage_hosts_file\": false,
+       \"manage_resolv_file\": false,
+       \"manage_services\": false,
+       \"provisioning\": true
+     },
+     \"timezone\": \"America/Montreal\"
+   }" 'http://confd:9486/1.1/wizard'
 
 
-echo "Waiting for wazo-webhookd (initializing amqp exchanges)..."
-python - <<'EOF'
+  echo "Waiting for wazo-webhookd (initializing amqp exchanges)..."
+  python - <<'EOF'
 import requests, time
 url = 'http://webhookd:9300/1.0/status'
 retry = 60
@@ -124,5 +126,6 @@ for n in range(retry):
     break
 EOF
 
-echo Creating first tenant...
-wazo-auth-cli tenant create my-company
+  echo Creating first tenant...
+  wazo-auth-cli tenant create $TENANT_NAME
+fi
