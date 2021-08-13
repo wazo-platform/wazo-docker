@@ -68,10 +68,14 @@ services:
       - /bin/wazo-confd/init
 
   provd:
-    image: wazoplatform/wazo-provd
+    image: wazoplatform/wazo-provd:confgend
+    build:
+      context: .
+      dockerfile: Dockerfile-provd
     ports:
       - 8666
     volumes:
+      - ./etc/wazo-confgend-client.conf:/etc/wazo-confgend-client/config.conf:ro
       - ./etc/wazo-provd.yml:/etc/wazo-provd/conf.d/config.yml:ro
       - ./bin/init-provd:/bin/wazo-provd/init:ro
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
@@ -120,6 +124,13 @@ services:
       - ${LOCAL_GIT_REPOS}/wazo-asterisk-config/etc/asterisk/http.d/01-wazo.conf:/etc/asterisk/http.d/01-wazo.conf:ro
       - asterisk-doc:/usr/share/asterisk/documentation
     command: "asterisk -fTvvv"
+
+  confgend:
+    image: wazoplatform/wazo-confgend
+    expose:
+      - 8669
+    volumes:
+      - ./etc/wazo-confgend.yml:/etc/wazo-confgend/conf.d/config.yml:ro
 
   ui:
     image: wazoplatform/wazo-ui
