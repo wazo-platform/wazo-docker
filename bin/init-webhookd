@@ -1,55 +1,30 @@
 #!/usr/bin/env bash
 set -x
 
+source /var/lib/wazo/helpers
+
+db_host='postgres'
+db_port='5432'
 db_name='wazo'
 db_username='asterisk'
 db_password='secret'
-db_uri="postgresql://$db_username:$db_password@postgres:5432"
+db_uri="postgresql://$db_username:$db_password@$db_host:$db_port"
 
-# TODO small check to be sure postgres up
-sleep 2
+echo Waiting for postgres...
+wait_for_service $db_host $db_port
 
-# Setup database
+echo Updating database...
 cd /usr/src/wazo-webhookd
 export ALEMBIC_DB_URI=$db_uri/$db_name
 alembic -c alembic.ini upgrade head
 
-function wait_for_rabbitmq(){
-  timeout=60
-  seconds=0
-  while [ "$seconds" -lt "$timeout" ] && ! nc -z -w1 rabbitmq 5672
-  do
-    seconds=$((seconds+1))
-    sleep 1
-  done
-
-  if [ "$seconds" -ge "$timeout" ]; then
-    exit 1
-  fi
-}
-
 echo Waiting for rabbitmq...
-wait_for_rabbitmq
+wait_for_service rabbitmq 5672
 
 echo Initializing amqp exchanges...
 wazo-webhookd-init-amqp --host rabbitmq
 
-function wait_for_key_file(){
-  timeout=60
-  seconds=0
-  while [ "$seconds" -lt "$timeout" ] && [ ! -f /var/lib/wazo-auth-keys/wazo-webhookd-key.yml ]
-  do
-    seconds=$((seconds+1))
-    sleep 1
-  done
-
-  if [ "$seconds" -ge "$timeout" ]; then
-    exit 1
-  fi
-}
-
 echo Waiting for key file...
-wait_for_key_file
+wait_for_file /var/lib/wazo-auth-keys/wazo-webhookd-key.yml
 
-# Running webhookd
 wazo-webhookd

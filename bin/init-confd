@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -x
 
+source /var/lib/wazo/helpers
+
 db_host='postgres'
 db_port='5432'
 db_name='wazo'
@@ -8,27 +10,13 @@ db_username='asterisk'
 db_password='secret'
 db_uri="postgresql://$db_username:$db_password@$db_host:$db_port"
 
-function wait_for_postgres(){
-  timeout=60
-  seconds=0
-  while [ "$seconds" -lt "$timeout" ] && ! nc -z -w1 $db_host $db_port
-  do
-    seconds=$((seconds+1))
-    sleep 1
-  done
+echo Waiting for postgres...
+wait_for_service $db_host $db_port
 
-  if [ "$seconds" -ge "$timeout" ]; then
-    exit 1
-  fi
-}
-
-wait_for_postgres
-
-# Setup database
 export ALEMBIC_DB_URI="$db_uri/$db_name"
-
 psql_cmd="psql $db_uri/$db_name"
 if ! $psql_cmd -tA $db_name $db_username --quiet -c "SELECT count(*) from infos" > /dev/null 2>&1; then
+  echo Initializing database...
   xivo-init-db --init \
     --pg_db_uri "$db_uri/postgres" \
     --owner "$db_username" \
@@ -37,41 +25,17 @@ if ! $psql_cmd -tA $db_name $db_username --quiet -c "SELECT count(*) from infos"
     --app_db_uri "$db_uri/$db_name"
 fi
 
+echo Updating database...
 xivo-update-db
 
-function wait_for_asterisk_documentation(){
-  timeout=60
-  seconds=0
-  while [ "$seconds" -lt "$timeout" ] && [ ! -f /var/lib/wazo-confd/asterisk-doc/core-en_US.xml ]
-  do
-    seconds=$((seconds+1))
-    sleep 1
-  done
-
-  if [ "$seconds" -ge "$timeout" ]; then
-    exit 1
-  fi
-}
-
-wait_for_asterisk_documentation
+echo Waiting for asterisk documentation file...
+wait_for_file /var/lib/wazo-confd/asterisk-doc/core-en_US.xml
+echo Extracting asterisk documentation...
 wazo-asterisk-doc-extractor /var/lib/wazo-confd/asterisk-doc/core-en_US.xml > /var/lib/wazo-confd/pjsip.json
 gzip -f /var/lib/wazo-confd/pjsip.json
 
-function wait_for_key_file(){
-  timeout=60
-  seconds=0
-  while [ "$seconds" -lt "$timeout" ] && ([ ! -f /var/lib/wazo-auth-keys/wazo-confd-key.yml ] || [ ! -f /var/lib/wazo-auth-keys/wazo-wizard-key.yml ])
-  do
-    seconds=$((seconds+1))
-    sleep 1
-  done
+echo Waiting for key file...
+wait_for_file /var/lib/wazo-auth-keys/wazo-confd-key.yml
+wait_for_file /var/lib/wazo-auth-keys/wazo-wizard-key.yml
 
-  if [ "$seconds" -ge "$timeout" ]; then
-    exit 1
-  fi
-}
-
-wait_for_key_file
-
-# Running wazo-confd
 wazo-confd

@@ -1,21 +1,9 @@
 #!/usr/bin/env bash
 set -x
 
-function wait_for_key_file(){
-  timeout=60
-  seconds=0
-  while [ "$seconds" -lt "$timeout" ] && [ ! -f /var/lib/wazo-auth-keys/wazo-provd-key.yml ]
-  do
-    seconds=$((seconds+1))
-    sleep 1
-  done
+source /var/lib/wazo/helpers
 
-  if [ "$seconds" -ge "$timeout" ]; then
-    exit 1
-  fi
-}
+echo Waiting for key file...
+wait_for_file /var/lib/wazo-auth-keys/wazo-provd-key.yml
 
-wait_for_key_file
-
-# Running wazo-provd
 twistd --nodaemon --no_save --pidfile= wazo-provd --stderr --verbose

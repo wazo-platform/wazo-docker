@@ -29,7 +29,10 @@ services:
         target: /var/lib/rabbitmq
 
   auth:
-    image: wazoplatform/wazo-auth
+    image: wazoplatform/wazo-auth:netcat
+    build:
+      context: .
+      dockerfile: Dockerfile-auth
     ports:
       - 9497
     environment:
@@ -38,6 +41,7 @@ services:
     volumes:
       - ./etc/wazo-auth.yml:/etc/wazo-auth/conf.d/config.yml:ro
       - ./bin/init-auth:/bin/wazo-auth/init:ro
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - ${LOCAL_GIT_REPOS}/wazo-auth:/usr/src/wazo-auth:ro  # include alembic scripts
       - ${LOCAL_GIT_REPOS}/wazo-auth-keys/etc/wazo-auth/conf.d/50-wazo-default-policies.yml:/etc/wazo-auth/conf.d/50-wazo-default-policies.yml:ro
     entrypoint:
@@ -56,6 +60,7 @@ services:
       - ./etc/wazo-confd.yml:/etc/wazo-confd/conf.d/config.yml:ro
       - ./etc/xivo-dao.yml:/etc/xivo-dao/conf.d/config.yml:ro
       - ./bin/init-confd:/bin/wazo-confd/init:ro
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
       - ${LOCAL_GIT_REPOS}/xivo-manage-db:/usr/share/xivo-manage-db:ro
       - asterisk-doc:/var/lib/wazo-confd/asterisk-doc
@@ -69,6 +74,7 @@ services:
     volumes:
       - ./etc/wazo-provd.yml:/etc/wazo-provd/conf.d/config.yml:ro
       - ./bin/init-provd:/bin/wazo-provd/init:ro
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
     entrypoint:
       - /bin/wazo-provd/init
@@ -95,6 +101,7 @@ services:
     volumes:
       - ./etc/wazo-webhookd.yml:/etc/wazo-webhookd/conf.d/config.yml:ro
       - ./bin/init-webhookd:/bin/wazo-webhookd/init:ro
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
       - ${LOCAL_GIT_REPOS}/wazo-webhookd:/usr/src/wazo-webhookd:ro  # include alembic scripts
     entrypoint:
