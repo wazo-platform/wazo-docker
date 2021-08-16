@@ -43,5 +43,5 @@ Contains docker-compose file to setup wazo-platform project
   docker-compose up webhookd
   ```
 
-* **Avoid to user `docker-compose restart <service>`**. It will only restart container without new
+* **Avoid to use `docker-compose restart <service>`**. It will only restart container without new
   parameters (mount, config, variable)
