@@ -21,14 +21,19 @@ Contains docker-compose file to setup wazo-platform project
 
 ## Start Environment
 
-* `docker-compose up -d`
+* `docker-compose up --detach`
 * Need to accept custom certificate on `https://localhost:8443`
 * default username / password: `root` / `secret`
 
+## Clean Environment
+
+* `docker-compose down --volumes`
+* `docker-compose up --detach`
+
 ## Restart Environment
 
-* `docker-compose down -v`
-* `docker-compose up -d`
+* `docker-compose down`
+* `docker-compose up --detach`
 
 ## Troubleshooting
 
