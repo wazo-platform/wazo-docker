@@ -84,14 +84,9 @@ services:
       - /bin/wazo-provd/init
 
   sysconfd:
-    image: wazoplatform/wazo-sysconfd-tests
-    build:
-      context: ${LOCAL_GIT_REPOS}/wazo-sysconfd
-      dockerfile: ${LOCAL_GIT_REPOS}/wazo-sysconfd/integration_tests/docker/Dockerfile-sysconfd-test
+    image: wazoplatform/wazo-sysconfd-mock
     ports:
       - 8668
-    volumes:
-      - ./etc/wazo-sysconfd.yml:/etc/wazo-sysconfd/conf.d/config.yml:ro
 
   webhookd:
     image: wazoplatform/wazo-webhookd:netcat
