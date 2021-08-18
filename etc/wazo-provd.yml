@@ -1,0 +1,11 @@
+general:
+  debug: true
+
+rest_api:
+  ip: 0.0.0.0
+
+auth:
+  host: auth
+
+amid:
+  host: amid

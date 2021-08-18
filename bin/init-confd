@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -x
+
+source /var/lib/wazo/helpers
+
+db_host='postgres'
+db_port='5432'
+db_name='wazo'
+db_username='asterisk'
+db_password='secret'
+db_uri="postgresql://$db_username:$db_password@$db_host:$db_port"
+
+echo Waiting for postgres...
+wait_for_service $db_host $db_port
+
+export ALEMBIC_DB_URI="$db_uri/$db_name"
+psql_cmd="psql $db_uri/$db_name"
+if ! $psql_cmd -tA $db_name $db_username --quiet -c "SELECT count(*) from infos" > /dev/null 2>&1; then
+  echo Initializing database...
+  xivo-init-db --init \
+    --pg_db_uri "$db_uri/postgres" \
+    --owner "$db_username" \
+    --password "$db_password" \
+    --db "$db_name" \
+    --app_db_uri "$db_uri/$db_name"
+fi
+
+echo Updating database...
+xivo-update-db
+
+echo Waiting for asterisk documentation file...
+wait_for_file /var/lib/wazo-confd/asterisk-doc/core-en_US.xml
+echo Extracting asterisk documentation...
+wazo-asterisk-doc-extractor /var/lib/wazo-confd/asterisk-doc/core-en_US.xml > /var/lib/wazo-confd/pjsip.json
+gzip -f /var/lib/wazo-confd/pjsip.json
+
+echo Waiting for key file...
+wait_for_file /var/lib/wazo-auth-keys/wazo-confd-key.yml
+wait_for_file /var/lib/wazo-auth-keys/wazo-wizard-key.yml
+
+wazo-confd

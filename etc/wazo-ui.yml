@@ -1,0 +1,27 @@
+debug: true
+http:
+  listen: 0.0.0.0
+
+amid:
+  host: amid
+
+auth:
+  host: auth
+
+call-logd:
+  host: call-logd
+
+confd:
+  host: confd
+
+dird:
+  host: dird
+
+plugind:
+  host: plugind
+
+provd:
+  host: provd
+
+webhookd:
+  host: webhookd
