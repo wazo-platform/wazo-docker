@@ -10,8 +10,7 @@ amqp:
 enabled_backend_plugins:
   ldap_user: false
 
-backend_policies:
-  wazo_user:
+default_user_policy: null
 
 service_discovery:
   enabled: false
