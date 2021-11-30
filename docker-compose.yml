@@ -106,8 +106,11 @@ services:
     entrypoint:
       - /bin/wazo-webhookd/init
 
-  ari:
-    image: wazoplatform/asterisk
+  asterisk:
+    image: wazoplatform/asterisk:sounds
+    build:
+      context: .
+      dockerfile: Dockerfile-asterisk
     ports:
       - "5039"
     volumes:
