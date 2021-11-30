@@ -3,7 +3,7 @@ services:
   nginx:
     image: nginx
     ports:
-      - '8443:443'
+      - '127.0.0.1:8443:443'
     volumes:
       - ./etc/nginx.conf:/etc/nginx/conf.d/config.conf:ro
       - ./certs:/certs:ro
