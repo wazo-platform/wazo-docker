@@ -25,7 +25,7 @@ services:
     ports:
       - "5672"
     volumes:
-      - tmpfs-rabbitmq:/var/lib/rabbitmq:rw
+      - tmp-rabbitmq:/var/lib/rabbitmq:rw
 
   auth:
     image: wazoplatform/wazo-auth:netcat
@@ -153,4 +153,4 @@ volumes:
   pgdata:
   wazo-auth-keys:
   asterisk-doc:
-  tmpfs-rabbitmq:
+  tmp-rabbitmq:
