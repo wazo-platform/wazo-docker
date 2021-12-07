@@ -1,0 +1,4 @@
+FROM wazoplatform/asterisk
+
+RUN true \
+    && apt-get update && apt-get install -y asterisk-sounds-main
