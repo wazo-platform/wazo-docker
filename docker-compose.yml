@@ -28,10 +28,7 @@ services:
       - tmp-rabbitmq:/var/lib/rabbitmq:rw
 
   auth:
-    image: wazoplatform/wazo-auth:netcat
-    build:
-      context: .
-      dockerfile: Dockerfile-auth
+    image: wazoplatform/wazo-auth
     ports:
       - 9497
     environment:
@@ -41,10 +38,7 @@ services:
       - ./etc/wazo-auth.yml:/etc/wazo-auth/conf.d/config.yml:ro
       - ./bin/init-auth:/bin/wazo-auth/init:ro
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
-      - ${LOCAL_GIT_REPOS}/wazo-auth:/usr/src/wazo-auth:ro  # include alembic scripts
       - ${LOCAL_GIT_REPOS}/wazo-auth-keys/etc/wazo-auth/conf.d/50-wazo-default-policies.yml:/etc/wazo-auth/conf.d/50-wazo-default-policies.yml:ro
-    entrypoint:
-      - /bin/wazo-auth/init
 
   confd:
     image: wazoplatform/wazo-confd:manage-db
