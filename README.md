@@ -34,6 +34,11 @@ Contains docker-compose file to setup wazo-platform project
 * `docker-compose down`
 * `docker-compose up --detach`
 
+## Test Environment
+
+* Install `curl` and `jq` commands
+* `./verify.sh`
+
 ## Troubleshooting
 
 * To get sql prompt: `docker-compose exec postgres psql -U asterisk wazo`
