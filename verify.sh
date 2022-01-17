@@ -4,9 +4,6 @@ set -e
 set -u  # fail if variable is undefined
 set -o pipefail  # fail if command before pipe fails
 
-echo 'Verify consul'
-docker-compose exec -T 'consul_server consul catalog services | grep rabbitmq'
-
 function wait_for_bootstrap_complete() {
     seconds=0
     timeout=120
