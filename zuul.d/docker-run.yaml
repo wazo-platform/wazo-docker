@@ -17,7 +17,7 @@
         chdir: "{{ zuul.project.src_dir }}"
 
     - name: Pull images
-      command: "docker-compose pull"
+      command: "docker-compose pull --ignore-pull-failures"
       args:
         chdir: "{{ zuul.project.src_dir }}"
       environment:

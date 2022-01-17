@@ -15,7 +15,7 @@ Contains docker-compose file to setup wazo-platform project
 
 ## Prepare Environment
 
-* `docker-compose pull`
+* `docker-compose pull --ignore-pull-failures`
 * `docker-compose build --pull`
 
 ## Start Environment
