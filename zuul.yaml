@@ -1,0 +1,14 @@
+- job:
+    name: wazo-docker-uc
+    description: Install Wazo Platform docker images
+    run: zuul.d/docker-run.yaml
+
+- project:
+    check:
+      jobs:
+        - wazo-docker-uc:
+            nodeset: vm-debian-10-m1s
+    gate:
+      jobs:
+        - wazo-docker-uc:
+            nodeset: vm-debian-10-m1s

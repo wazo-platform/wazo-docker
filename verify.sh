@@ -4,23 +4,29 @@ set -e
 set -u  # fail if variable is undefined
 set -o pipefail  # fail if command before pipe fails
 
-echo 'Verify consul'
-docker-compose exec -T 'consul_server consul catalog services | grep rabbitmq'
-
 function wait_for_bootstrap_complete() {
     seconds=0
     timeout=120
     echo -n 'Waiting for bootstrap complete'
-    while [ "$seconds" -lt "$timeout" ] && ! docker-compose ps bootstrap | grep "Exit 0" > /dev/null
+    while [ "$seconds" -lt "$timeout" ] && [ "$(docker-compose ps --format json bootstrap | jq --raw-output .[0].State)" != 'exited' ];
       do
         echo -n '.'
         seconds=$((seconds+2))
         sleep 2
       done
+
     echo ' Ready!'
 }
 
 wait_for_bootstrap_complete
+
+echo -n 'Validating bootstrap exit status... '
+BOOTSTRAP_EXIT_CODE=$(docker-compose ps --status exited --format json bootstrap | jq --raw-output .[0].ExitCode)
+if [ $BOOTSTRAP_EXIT_CODE -ne 0 ]; then
+    echo 'FAILED'
+    exit 1
+fi
+echo 'SUCCEED'
 
 echo -n 'Creating token... '
 RESULT=$(curl \
