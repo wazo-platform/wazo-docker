@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-set -x
+set -e
+
+container_timeout=${INIT_TIMEOUT:-60}
 
 function wait_for_wazo_auth() {
     seconds=0
-    timeout=30
-    while [ "$seconds" -lt "$timeout" ] && ! wazo-auth-cli user list > /dev/null
+    while [ "$seconds" -lt "$container_timeout" ] && ! wazo-auth-cli user list > /dev/null
       do
         echo -n .
         seconds=$((seconds+1))
@@ -19,10 +20,10 @@ echo Generating or updating service users...
 wazo-auth-keys service update
 
 echo Waiting for wazo-confd...
-python - <<'EOF'
+python - <<EOF
 import requests, time
 url = 'http://confd:9486/1.1/infos'
-retry = 60
+retry = $container_timeout
 delay = 1
 for n in range(retry):
     try:
@@ -33,15 +34,15 @@ for n in range(retry):
             continue
         else:
             raise
-    print(r.text)
+    print(f'Response: {r}')
     break
 EOF
 
 echo Waiting for wazo-provd...
-python - <<'EOF'
+python - <<EOF
 import requests, time
 url = 'http://provd:8666/0.2/status'
-retry = 60
+retry = $container_timeout
 delay = 1
 for n in range(retry):
     try:
@@ -52,15 +53,15 @@ for n in range(retry):
             continue
         else:
             raise
-    print(r.text)
+    print(f'Response: {r}')
     break
 EOF
 
 echo Waiting for wazo-sysconfd...
-python - <<'EOF'
+python - <<EOF
 import requests, time
 url = 'http://sysconfd:8668/status-check'
-retry = 60
+retry = $container_timeout
 delay = 1
 for n in range(retry):
     try:
@@ -71,7 +72,7 @@ for n in range(retry):
             continue
         else:
             raise
-    print(r)
+    print(f'Response: {r}')
     break
 EOF
 
@@ -108,10 +109,10 @@ if [[ ! $(wazo-auth-cli tenant show $TENANT_NAME) = *$TENANT_NAME* ]]; then
 
 
   echo "Waiting for wazo-webhookd (initializing amqp exchanges)..."
-  python - <<'EOF'
+  python - <<EOF
 import requests, time
 url = 'http://webhookd:9300/1.0/status'
-retry = 60
+retry = $container_timeout
 delay = 1
 for n in range(retry):
     try:
@@ -122,10 +123,12 @@ for n in range(retry):
             continue
         else:
             raise
-    print(r)
+    print(f'Response: {r}')
     break
 EOF
 
   echo Creating first tenant...
   wazo-auth-cli tenant create $TENANT_NAME
 fi
+
+echo Successfully bootstrapped !

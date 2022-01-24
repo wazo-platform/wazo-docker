@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
+timeout=${INIT_TIMEOUT:-60}
+
 function wait_for_service () {
   host=$1
   port=$2
-  timeout=${3:-60}
   seconds=0
   while [ "$seconds" -lt "$timeout" ] && ! nc -z -w1 $host $port
   do
@@ -19,7 +20,6 @@ function wait_for_service () {
 
 function wait_for_file(){
   key_file=$1
-  timeout=${2:-60}
   seconds=0
   while [ "$seconds" -lt "$timeout" ] && [ ! -f $key_file ]
   do
