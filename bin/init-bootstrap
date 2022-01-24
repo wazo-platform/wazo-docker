@@ -32,7 +32,7 @@ for n in range(retry):
             continue
         else:
             raise
-    print(r.text)
+    print(f'Response: {r}')
     break
 EOF
 
@@ -51,7 +51,7 @@ for n in range(retry):
             continue
         else:
             raise
-    print(r.text)
+    print(f'Response: {r}')
     break
 EOF
 
@@ -70,7 +70,7 @@ for n in range(retry):
             continue
         else:
             raise
-    print(r)
+    print(f'Response: {r}')
     break
 EOF
 
@@ -121,10 +121,12 @@ for n in range(retry):
             continue
         else:
             raise
-    print(r)
+    print(f'Response: {r}')
     break
 EOF
 
   echo Creating first tenant...
   wazo-auth-cli tenant create $TENANT_NAME
 fi
+
+echo Successfully bootstrapped !
