@@ -146,4 +146,4 @@ volumes:
   pgdata:
   wazo-auth-keys:
   asterisk-doc:
-  tmp-rabbitmq:
+  tmp-rabbitmq:   # Compatibility for non-Linux systems
