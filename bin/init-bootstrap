@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -x
 
 function wait_for_wazo_auth() {
     seconds=0
