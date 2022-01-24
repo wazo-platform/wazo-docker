@@ -15,6 +15,7 @@ Contains docker-compose file to setup wazo-platform project
 
 ## Prepare Environment
 
+* `for repo in wazo-asterisk-config wazo-auth-keys xivo-manage-db; do git -C "$LOCAL_GIT_REPOS/$repo" pull; done`
 * `docker-compose pull --ignore-pull-failures`
 * `docker-compose build --pull`
 
