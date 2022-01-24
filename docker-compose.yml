@@ -48,6 +48,7 @@ services:
       - 9486
     environment:
       XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+      INIT_TIMEOUT: 60
     volumes:
       - ./etc/wazo-confd.yml:/etc/wazo-confd/conf.d/config.yml:ro
       - ./etc/xivo-dao.yml:/etc/xivo-dao/conf.d/config.yml:ro
@@ -64,6 +65,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-provd
+    environment:
+      INIT_TIMEOUT: 60
     ports:
       - 8666
     volumes:
@@ -89,6 +92,7 @@ services:
       - 9300
     environment:
       XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+      INIT_TIMEOUT: 60
     volumes:
       - ./etc/wazo-webhookd.yml:/etc/wazo-webhookd/conf.d/config.yml:ro
       - ./bin/init-webhookd:/bin/wazo-webhookd/init:ro
@@ -134,6 +138,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-bootstrap
+    environment:
+      INIT_TIMEOUT: 60
     volumes:
       - ./bin/init-bootstrap:/bin/platform-bootstrap/init:ro
       - ./etc/wazo-auth-cli.yml:/etc/wazo-auth-cli/conf.d/config.yml:ro
