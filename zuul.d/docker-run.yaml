@@ -1,11 +1,6 @@
 ---
 - hosts: all
   tasks:
-    - name: clone wazo-asterisk-config
-      command: "git clone https://github.com/wazo-platform/wazo-asterisk-config.git"
-      args:
-        chdir: "{{ zuul.project.src_dir }}"
-
     - name: clone wazo-auth-key
       command: "git clone https://github.com/wazo-platform/wazo-auth-keys.git"
       args:

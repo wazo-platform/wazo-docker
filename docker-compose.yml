@@ -122,22 +122,6 @@ services:
       - ./etc/asterisk-modules.conf:/etc/asterisk/modules.conf:ro
       - ./etc/asterisk-http.conf:/etc/asterisk/http.d/02-http.conf:ro
       - asterisk-doc:/usr/share/asterisk/documentation
-      - type: bind
-        source: ${LOCAL_GIT_REPOS}/wazo-asterisk-config/etc/asterisk/ari.conf
-        target: /etc/asterisk/ari.conf
-        read_only: true
-      - type: bind
-        source: ${LOCAL_GIT_REPOS}/wazo-asterisk-config/etc/asterisk/ari.d
-        target: /etc/asterisk/ari.d
-        read_only: true
-      - type: bind
-        source: ${LOCAL_GIT_REPOS}/wazo-asterisk-config/etc/asterisk/http.conf
-        target: /etc/asterisk/http.conf
-        read_only: true
-      - type: bind
-        source: ${LOCAL_GIT_REPOS}/wazo-asterisk-config/etc/asterisk/http.d/01-wazo.conf
-        target: /etc/asterisk/http.d/01-wazo.conf
-        read_only: true
     command: "asterisk -fTvvv"
 
   confgend:
