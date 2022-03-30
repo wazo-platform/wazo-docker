@@ -58,6 +58,7 @@ services:
       - ./bin/init-confd:/bin/wazo-confd/init:ro
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+      - asterisk-autoprov:/etc/asterisk/pjsip.d:rw  # write 05-autoprov-wizard.conf
       - asterisk-doc:/var/lib/wazo-confd/asterisk-doc:ro
       - type: bind
         source: ${LOCAL_GIT_REPOS}/xivo-manage-db
@@ -121,8 +122,11 @@ services:
     volumes:
       - ./etc/asterisk-modules.conf:/etc/asterisk/modules.conf:ro
       - ./etc/asterisk-http.conf:/etc/asterisk/http.d/02-http.conf:ro
+      - ./bin/init-asterisk:/bin/asterisk/init:ro
+      - asterisk-autoprov:/etc/asterisk/pjsip.d:rw
       - asterisk-doc:/usr/share/asterisk/documentation:rw
-    command: "asterisk -fTvvv"
+    entrypoint:
+      - /bin/asterisk/init
 
   confgend:
     image: wazoplatform/wazo-confgend
@@ -159,5 +163,6 @@ services:
 volumes:
   pgdata:
   wazo-auth-keys:
+  asterisk-autoprov:
   asterisk-doc:
   tmp-rabbitmq:   # Compatibility for non-Linux systems
