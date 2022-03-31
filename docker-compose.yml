@@ -9,7 +9,7 @@ services:
       - ./certs:/certs:ro
 
   postgres:
-    image: postgres
+    image: postgres:11  # Must use compatible version than the odbc_postgresql installed in asterisk container
     environment:
       POSTGRES_DB: wazo
       POSTGRES_USER: asterisk  # reason: hardcoded in populate.sql
