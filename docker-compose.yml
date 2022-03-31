@@ -124,6 +124,8 @@ services:
     volumes:
       - ./etc/asterisk-modules.conf:/etc/asterisk/modules.conf:ro
       - ./etc/asterisk-http.conf:/etc/asterisk/http.d/02-http.conf:ro
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - ./etc/wazo-confgend-client.conf:/etc/wazo-confgend-client/config.conf:ro
       - ./bin/init-asterisk:/bin/asterisk/init:ro
       - asterisk-autoprov:/etc/asterisk/pjsip.d:rw
       - asterisk-doc:/usr/share/asterisk/documentation:rw

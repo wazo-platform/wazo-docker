@@ -1,8 +1,16 @@
 #!/usr/bin/env bash
 set -x
 
+source /var/lib/wazo/helpers
+
 # Allow wazo-confd to write file 05-autoprov-wizard.conf
 chown asterisk:www-data /etc/asterisk/pjsip.d
 chmod 770 /etc/asterisk/pjsip.d
+
+db_host='confgend'
+db_port='8669'
+
+echo Waiting for wazo-confgend...
+wait_for_service $db_host $db_port
 
 asterisk -fTvvv
