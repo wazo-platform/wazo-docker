@@ -119,8 +119,9 @@ services:
       dockerfile: Dockerfile-asterisk
     ports:
       - "5039"
-      - '127.0.0.1:5060:5060'  # SIP
-      - '127.0.0.1:19980-20000:19980-20000/udp'  # RTP
+      - '5060:5060/udp'  # SIP
+      - '5060:5060/tcp'  # SIP
+      - '19980-20000:19980-20000/udp'  # RTP
     volumes:
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - ./etc/wazo-confgend-client.conf:/etc/wazo-confgend-client/config.conf:ro
