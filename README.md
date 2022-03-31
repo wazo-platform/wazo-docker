@@ -55,3 +55,5 @@ Contains docker-compose file to setup wazo-platform project
 
 * **Avoid to use `docker-compose restart <service>`**. It will only restart container without new
   parameters (mount, config, variable)
+* When running softphone on the same host than docker, don't use 127.0.0.1:5060, but use *public* IP
+  (i.e. 192.168.x.x:5060)
