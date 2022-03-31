@@ -130,6 +130,15 @@ services:
       - ./bin/init-asterisk:/bin/asterisk/init:ro
       - asterisk-autoprov:/etc/asterisk/pjsip.d:rw
       - asterisk-doc:/usr/share/asterisk/documentation:rw
+      # xivo-config has too much dependencies to be installed in the container
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/xivo-config/etc/xivo/asterisk
+        target: /etc/xivo/asterisk
+        read_only: true
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/xivo-config/dialplan/asterisk
+        target: /usr/share/xivo-config/dialplan/asterisk
+        read_only: true
     entrypoint:
       - /bin/asterisk/init
 
