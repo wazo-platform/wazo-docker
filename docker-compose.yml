@@ -122,7 +122,6 @@ services:
       - '127.0.0.1:5060:5060'  # SIP
       - '127.0.0.1:19980-20000:19980-20000/udp'  # RTP
     volumes:
-      - ./etc/asterisk-modules.conf:/etc/asterisk/modules.conf:ro
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - ./etc/wazo-confgend-client.conf:/etc/wazo-confgend-client/config.conf:ro
       - ./etc/asterisk-http.conf:/etc/asterisk/http.d/02-docker.conf:ro
