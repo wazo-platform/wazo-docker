@@ -7,6 +7,12 @@ source /var/lib/wazo/helpers
 chown asterisk:www-data /etc/asterisk/pjsip.d
 chmod 770 /etc/asterisk/pjsip.d
 
+db_host='postgres'
+db_port='5432'
+
+echo Waiting for postgres...
+wait_for_service $db_host $db_port
+
 db_host='confgend'
 db_port='8669'
 

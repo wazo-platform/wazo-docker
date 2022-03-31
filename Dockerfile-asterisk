@@ -1,7 +1,7 @@
 FROM wazoplatform/asterisk
 
 RUN apt-get update
-RUN apt-get install -y asterisk-sounds-main
+RUN apt-get install -y asterisk-sounds-main odbc-postgresql
 RUN apt-get install -y netcat
 
 RUN apt-get update && apt-get install -y python3 python3-venv
