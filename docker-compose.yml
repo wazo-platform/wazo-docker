@@ -177,6 +177,25 @@ services:
     entrypoint:
       - /bin/wazo-agid/init
 
+  dird:
+    image: wazoplatform/wazo-dird:netcat
+    build:
+      context: .
+      dockerfile: Dockerfile-dird
+    expose:
+      - 9489
+    volumes:
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - ./bin/init-dird:/bin/wazo-dird/init:ro
+      - ./etc/wazo-dird.yml:/etc/wazo-dird/conf.d/config.yml:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/wazo-dird
+        target: /usr/src/wazo-dird  # include alembic script
+        read_only: true
+    entrypoint:
+      - /bin/wazo-dird/init
+
   ui:
     image: wazoplatform/wazo-ui
     expose:
