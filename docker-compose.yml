@@ -152,10 +152,14 @@ services:
       - ./etc/wazo-confgend.yml:/etc/wazo-confgend/conf.d/config.yml:ro
 
   agid:
-    image: wazoplatform/wazo-agid
+    image: wazoplatform/wazo-agid:netcat
+    build:
+      context: .
+      dockerfile: Dockerfile-agid
     expose:
       - 4573
     volumes:
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - ./etc/wazo-agid.yml:/etc/wazo-agid/conf.d/config.yml:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
       # xivo-config has too much dependencies to be installed in the container
