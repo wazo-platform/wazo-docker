@@ -23,19 +23,19 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./init-db:/docker-entrypoint-initdb.d
-    ports:
+    expose:
       - "5432"
 
   rabbitmq:
     image: rabbitmq
-    ports:
+    expose:
       - "5672"
     volumes:
       - tmp-rabbitmq:/var/lib/rabbitmq:rw
 
   auth:
     image: wazoplatform/wazo-auth
-    ports:
+    expose:
       - 9497
     environment:
       TZ: America/Montreal
@@ -53,7 +53,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-confd
-    ports:
+    expose:
       - 9486
     environment:
       XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
@@ -80,7 +80,7 @@ services:
       dockerfile: Dockerfile-provd
     environment:
       INIT_TIMEOUT: 120
-    ports:
+    expose:
       - 8666
     volumes:
       - ./etc/wazo-confgend-client.conf:/etc/wazo-confgend-client/config.conf:ro
@@ -93,7 +93,7 @@ services:
 
   sysconfd:
     image: wazoplatform/wazo-sysconfd-mock
-    ports:
+    expose:
       - 8668
 
   webhookd:
@@ -101,7 +101,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-webhookd
-    ports:
+    expose:
       - 9300
     environment:
       XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
@@ -123,6 +123,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-asterisk
+    expose:
+      - "5039"
     ports:
       - '5060:5060/udp'  # SIP
       - '19980-20000:19980-20000/udp'  # RTP
@@ -177,7 +179,7 @@ services:
 
   ui:
     image: wazoplatform/wazo-ui
-    ports:
+    expose:
       - 9296
     volumes:
       - ./etc/wazo-ui.yml:/etc/wazo-ui/conf.d/config.yml:ro
