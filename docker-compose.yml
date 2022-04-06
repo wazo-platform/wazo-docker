@@ -37,7 +37,10 @@ services:
     volumes:
       - ./etc/wazo-auth.yml:/etc/wazo-auth/conf.d/config.yml:ro
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
-      - ${LOCAL_GIT_REPOS}/wazo-auth-keys/etc/wazo-auth/conf.d/50-wazo-default-policies.yml:/etc/wazo-auth/conf.d/50-wazo-default-policies.yml:ro
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/wazo-auth-keys/etc/wazo-auth/conf.d/50-wazo-default-policies.yml
+        target: /etc/wazo-auth/conf.d/50-wazo-default-policies.yml
+        read_only: true
 
   confd:
     image: wazoplatform/wazo-confd:manage-db
@@ -55,8 +58,12 @@ services:
       - ./bin/init-confd:/bin/wazo-confd/init:ro
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
-      - ${LOCAL_GIT_REPOS}/xivo-manage-db:/usr/share/xivo-manage-db:ro
-      - asterisk-doc:/var/lib/wazo-confd/asterisk-doc
+      - asterisk-autoprov:/etc/asterisk/pjsip.d:rw  # write 05-autoprov-wizard.conf
+      - asterisk-doc:/var/lib/wazo-confd/asterisk-doc:ro
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/xivo-manage-db
+        target: /usr/share/xivo-manage-db
+        read_only: true
     entrypoint:
       - /bin/wazo-confd/init
 
@@ -98,7 +105,10 @@ services:
       - ./bin/init-webhookd:/bin/wazo-webhookd/init:ro
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
-      - ${LOCAL_GIT_REPOS}/wazo-webhookd:/usr/src/wazo-webhookd:ro  # include alembic scripts
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/wazo-webhookd
+        target: /usr/src/wazo-webhookd  # include alembic script
+        read_only: true
     entrypoint:
       - /bin/wazo-webhookd/init
 
@@ -112,12 +122,11 @@ services:
     volumes:
       - ./etc/asterisk-modules.conf:/etc/asterisk/modules.conf:ro
       - ./etc/asterisk-http.conf:/etc/asterisk/http.d/02-http.conf:ro
-      - ${LOCAL_GIT_REPOS}/wazo-asterisk-config/etc/asterisk/ari.conf:/etc/asterisk/ari.conf:ro
-      - ${LOCAL_GIT_REPOS}/wazo-asterisk-config/etc/asterisk/ari.d:/etc/asterisk/ari.d:ro
-      - ${LOCAL_GIT_REPOS}/wazo-asterisk-config/etc/asterisk/http.conf:/etc/asterisk/http.conf:ro
-      - ${LOCAL_GIT_REPOS}/wazo-asterisk-config/etc/asterisk/http.d/01-wazo.conf:/etc/asterisk/http.d/01-wazo.conf:ro
-      - asterisk-doc:/usr/share/asterisk/documentation
-    command: "asterisk -fTvvv"
+      - ./bin/init-asterisk:/bin/asterisk/init:ro
+      - asterisk-autoprov:/etc/asterisk/pjsip.d:rw
+      - asterisk-doc:/usr/share/asterisk/documentation:rw
+    entrypoint:
+      - /bin/asterisk/init
 
   confgend:
     image: wazoplatform/wazo-confgend
@@ -143,13 +152,17 @@ services:
     volumes:
       - ./bin/init-bootstrap:/bin/platform-bootstrap/init:ro
       - ./etc/wazo-auth-cli.yml:/etc/wazo-auth-cli/conf.d/config.yml:ro
-      - ${LOCAL_GIT_REPOS}/wazo-auth-keys/etc/wazo-auth-keys/config.yml:/etc/wazo-auth-keys/config.yml:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:rw
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/wazo-auth-keys/etc/wazo-auth-keys/config.yml
+        target: /etc/wazo-auth-keys/config.yml
+        read_only: true
     entrypoint:
       - /bin/platform-bootstrap/init
 
 volumes:
   pgdata:
   wazo-auth-keys:
+  asterisk-autoprov:
   asterisk-doc:
   tmp-rabbitmq:   # Compatibility for non-Linux systems

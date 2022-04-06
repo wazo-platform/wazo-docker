@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -x
+
+# Allow wazo-confd to write file 05-autoprov-wizard.conf
+chown asterisk:www-data /etc/asterisk/pjsip.d
+chmod 770 /etc/asterisk/pjsip.d
+
+asterisk -fTvvv

@@ -76,7 +76,7 @@ fi
 echo 'SUCCEED'
 
 echo -n 'Validating wazo-webhookd status... '
-PROVD_STATUS=$(curl \
+WEBHOOKD_STATUS=$(curl \
   --insecure \
   --silent \
   --show-error \
@@ -85,11 +85,11 @@ PROVD_STATUS=$(curl \
   --header "X-Auth-Token: $TOKEN" \
   'https://localhost:8443/api/webhookd/1.0/status')
 
-if [ $(echo $PROVD_STATUS | jq --raw-output .bus_consumer.status) != 'ok' ]; then
+if [ $(echo $WEBHOOKD_STATUS | jq --raw-output .bus_consumer.status) != 'ok' ]; then
   echo 'FAILED (bus_consume)'
   exit 1
 fi
-if [ $(echo $PROVD_STATUS | jq --raw-output .master_tenant.status) != 'ok' ]; then
+if [ $(echo $WEBHOOKD_STATUS | jq --raw-output .master_tenant.status) != 'ok' ]; then
   echo 'FAILED (master_tenant)'
   exit 1
 fi
