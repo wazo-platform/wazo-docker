@@ -9,7 +9,7 @@ services:
       - ./certs:/certs:ro
 
   postgres:
-    image: postgres
+    image: postgres:11  # Must use compatible version than the odbc_postgresql installed in asterisk container
     environment:
       POSTGRES_DB: wazo
       POSTGRES_USER: asterisk  # reason: hardcoded in populate.sql
@@ -118,13 +118,27 @@ services:
       context: .
       dockerfile: Dockerfile-asterisk
     ports:
-      - "5039"
+      - '5060:5060/udp'  # SIP
+      - '19980-20000:19980-20000/udp'  # RTP
     volumes:
-      - ./etc/asterisk-modules.conf:/etc/asterisk/modules.conf:ro
-      - ./etc/asterisk-http.conf:/etc/asterisk/http.d/02-http.conf:ro
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - ./etc/wazo-confgend-client.conf:/etc/wazo-confgend-client/config.conf:ro
+      - ./etc/asterisk-http.conf:/etc/asterisk/http.d/02-docker.conf:ro
+      - ./etc/asterisk-extensions.conf:/etc/asterisk/extensions.d/02-docker.conf:ro
+      - ./etc/asterisk-odbc.ini:/etc/odbc.ini:ro
+      - ./etc/asterisk-res_odbc.conf:/etc/asterisk/res_odbc.d/02-docker.conf:ro
       - ./bin/init-asterisk:/bin/asterisk/init:ro
       - asterisk-autoprov:/etc/asterisk/pjsip.d:rw
       - asterisk-doc:/usr/share/asterisk/documentation:rw
+      # xivo-config has too much dependencies to be installed in the container
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/xivo-config/etc/xivo/asterisk
+        target: /etc/xivo/asterisk
+        read_only: true
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/xivo-config/dialplan/asterisk
+        target: /usr/share/xivo-config/dialplan/asterisk
+        read_only: true
     entrypoint:
       - /bin/asterisk/init
 
@@ -134,6 +148,23 @@ services:
       - 8669
     volumes:
       - ./etc/wazo-confgend.yml:/etc/wazo-confgend/conf.d/config.yml:ro
+
+  agid:
+    image: wazoplatform/wazo-agid:netcat
+    build:
+      context: .
+      dockerfile: Dockerfile-agid
+    expose:
+      - 4573
+    volumes:
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - ./etc/wazo-agid.yml:/etc/wazo-agid/conf.d/config.yml:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+      # xivo-config has too much dependencies to be installed in the container
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/xivo-config/etc/xivo
+        target: /etc/xivo
+        read_only: true
 
   ui:
     image: wazoplatform/wazo-ui

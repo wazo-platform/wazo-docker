@@ -1,0 +1,10 @@
+debug: true
+listen_address: 0.0.0.0
+
+db_uri: postgresql://asterisk:secret@postgres/wazo
+
+auth:
+  host: auth
+
+confd:
+  host: confd

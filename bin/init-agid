@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -x
+
+source /var/lib/wazo/helpers
+
+db_host='postgres'
+db_port='5432'
+
+echo Waiting for postgres...
+wait_for_service $db_host $db_port
+
+echo Waiting for key file...
+wait_for_file /var/lib/wazo-auth-keys/wazo-agid-key.yml
+
+wazo-agid

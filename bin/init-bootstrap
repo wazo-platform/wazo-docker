@@ -108,6 +108,29 @@ if [[ ! $(wazo-auth-cli tenant show $TENANT_NAME) = *$TENANT_NAME* ]]; then
    }" 'http://confd:9486/1.1/wizard'
 
 
+  # Need to restrict port range to avoid docker issue
+  # https://github.com/moby/moby/issues/11185
+  TOKEN=$(wazo-auth-cli token create)
+  RTP_START=19980
+  RTP_END=20000
+  echo -n "Configuring RTP ports (${RTP_START}-${RTP_END}) ..."
+  RESULT=$(curl --silent -X PUT --header 'Content-Type: application/json' --header 'Accept: application/json' --header "X-Auth-Token: ${TOKEN}" -d "{
+     \"options\": {
+        \"icesupport\": \"true\",
+        \"rtpchecksums\": \"yes\",
+        \"strictrtp\": \"no\",
+        \"rtpstart\": \"${RTP_START}\",
+        \"rtpend\": \"${RTP_END}\"
+     }
+   }" 'http://confd:9486/1.1/asterisk/rtp/general')
+
+   if [ -n "${RESULT}" ]; then
+     echo ' FAILED'
+     exit 1
+   fi
+   echo ' SUCCEED'
+
+
   echo "Waiting for wazo-webhookd (initializing amqp exchanges)..."
   python - <<EOF
 import requests, time
