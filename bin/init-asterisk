@@ -13,11 +13,11 @@ db_port='5432'
 echo Waiting for postgres...
 wait_for_service $db_host $db_port
 
-db_host='confgend'
-db_port='8669'
+confgend_host='confgend'
+confgend_port='8669'
 
 echo Waiting for wazo-confgend...
-wait_for_service $db_host $db_port
+wait_for_service $confgend_host $confgend_port
 
 wazo-confgen asterisk/modules.conf > /etc/asterisk/modules.conf
 
