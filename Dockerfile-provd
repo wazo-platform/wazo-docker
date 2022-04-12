@@ -1,6 +1,6 @@
 FROM wazoplatform/wazo-provd
 
-RUN apt-get update && apt-get install -y python3 python3-venv
+RUN apt-get update && apt-get install -y python3 python3-venv netcat
 RUN python3 -m venv /opt/venv3
 # Activate virtual env
 ENV PATH="/opt/venv3/bin:$PATH"
