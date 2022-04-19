@@ -7,6 +7,12 @@ services:
     volumes:
       - ./etc/nginx.conf:/etc/nginx/conf.d/config.conf:ro
       - ./certs:/certs:ro
+    depends_on:  # Avoid to fail container if host doesn't exist
+      - ui
+      - auth
+      - confd
+      - provd
+      - webhookd
 
   postgres:
     image: postgres:11  # Must use compatible version than the odbc_postgresql installed in asterisk container
