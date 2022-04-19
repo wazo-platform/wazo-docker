@@ -7,6 +7,12 @@ services:
     volumes:
       - ./etc/nginx.conf:/etc/nginx/conf.d/config.conf:ro
       - ./certs:/certs:ro
+    depends_on:  # Avoid to fail container if host doesn't exist
+      - ui
+      - auth
+      - confd
+      - provd
+      - webhookd
 
   postgres:
     image: postgres:11  # Must use compatible version than the odbc_postgresql installed in asterisk container
@@ -158,6 +164,7 @@ services:
       - 4573
     volumes:
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - ./bin/init-agid:/bin/wazo-agid/init:ro
       - ./etc/wazo-agid.yml:/etc/wazo-agid/conf.d/config.yml:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
       # xivo-config has too much dependencies to be installed in the container
@@ -165,6 +172,8 @@ services:
         source: ${LOCAL_GIT_REPOS}/xivo-config/etc/xivo
         target: /etc/xivo
         read_only: true
+    entrypoint:
+      - /bin/wazo-agid/init
 
   ui:
     image: wazoplatform/wazo-ui
