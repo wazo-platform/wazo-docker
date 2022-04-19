@@ -158,6 +158,7 @@ services:
       - 4573
     volumes:
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - ./bin/init-agid:/bin/wazo-agid/init:ro
       - ./etc/wazo-agid.yml:/etc/wazo-agid/conf.d/config.yml:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
       # xivo-config has too much dependencies to be installed in the container
@@ -165,6 +166,8 @@ services:
         source: ${LOCAL_GIT_REPOS}/xivo-config/etc/xivo
         target: /etc/xivo
         read_only: true
+    entrypoint:
+      - /bin/wazo-agid/init
 
   ui:
     image: wazoplatform/wazo-ui
