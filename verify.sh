@@ -115,6 +115,24 @@ if [ $(echo $DIRD_STATUS | jq --raw-output .rest_api.status) != 'ok' ]; then
 fi
 echo "SUCCEED"
 
+
+echo -n 'Validating wazo-amid status... '
+AMID_STATUS=$(curl \
+  --insecure \
+  --silent \
+  --show-error \
+  --request POST \
+  --header 'Accept: application/json' \
+  --header 'Content-Type: application/json' \
+  --header "X-Auth-Token: $TOKEN" \
+  'https://localhost:8443/api/amid/1.0/action/ping')
+
+if [ $(echo $AMID_STATUS | jq --raw-output .[].Response) != 'Success' ]; then
+  echo 'FAILED (ping action)'
+  exit 1
+fi
+echo "SUCCEED"
+
 echo -n 'Validating wazo-calld status... '
 echo 'NOT IMPLEMENTED'
 

@@ -124,7 +124,8 @@ services:
       context: .
       dockerfile: Dockerfile-asterisk
     expose:
-      - "5039"
+      - "5038"  # AMI
+      - "5039"  # HTTP (ARI/AJAM)
     ports:
       - '5060:5060/udp'  # SIP
       - '19980-20000:19980-20000/udp'  # RTP
@@ -135,6 +136,7 @@ services:
       - ./etc/asterisk-extensions.conf:/etc/asterisk/extensions.d/02-docker.conf:ro
       - ./etc/asterisk-odbc.ini:/etc/odbc.ini:ro
       - ./etc/asterisk-res_odbc.conf:/etc/asterisk/res_odbc.d/02-docker.conf:ro
+      - ./etc/asterisk-manager.conf:/etc/asterisk/manager.d/999-docker.conf:ro
       - ./bin/init-asterisk:/bin/asterisk/init:ro
       - asterisk-autoprov:/etc/asterisk/pjsip.d:rw
       - asterisk-doc:/usr/share/asterisk/documentation:rw
@@ -195,6 +197,20 @@ services:
         read_only: true
     entrypoint:
       - /bin/wazo-dird/init
+
+  amid:
+    image: wazoplatform/wazo-amid
+    environment:
+      XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+    expose:
+      - 9491
+    volumes:
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - ./bin/init-amid:/bin/wazo-amid/init:ro
+      - ./etc/wazo-amid.yml:/etc/wazo-amid/conf.d/config.yml:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+    entrypoint:
+      - /bin/wazo-amid/init
 
   ui:
     image: wazoplatform/wazo-ui
