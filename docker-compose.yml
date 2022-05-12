@@ -212,6 +212,20 @@ services:
     entrypoint:
       - /bin/wazo-amid/init
 
+  call-logd:
+    image: wazoplatform/wazo-call-logd
+    environment:
+      XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+    expose:
+      - 9298
+    volumes:
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - ./bin/init-call-logd:/bin/wazo-call-logd/init:ro
+      - ./etc/wazo-call-logd.yml:/etc/wazo-call-logd/conf.d/config.yml:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+    entrypoint:
+      - /bin/wazo-call-logd/init
+
   ui:
     image: wazoplatform/wazo-ui
     expose:

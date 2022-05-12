@@ -1,0 +1,21 @@
+debug: true
+rest_api:
+  listen: 0.0.0.0
+
+db_uri: postgresql://asterisk:secret@postgres/wazo
+cel_db_uri: postgresql://asterisk:secret@postgres/wazo
+
+celery:
+  broker: amqp://guest:guest@rabbitmq:5672
+
+bus:
+  host: rabbitmq
+
+auth:
+  host: auth
+
+confd:
+  host: confd
+
+smtp:
+  host: NOT-IMPLEMENTED
