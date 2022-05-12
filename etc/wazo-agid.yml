@@ -3,6 +3,12 @@ listen_address: 0.0.0.0
 
 db_uri: postgresql://asterisk:secret@postgres/wazo
 
+agentd:
+  host: NOT-IMPLEMENTED
+
+dird:
+  host: dird
+
 auth:
   host: auth
 
