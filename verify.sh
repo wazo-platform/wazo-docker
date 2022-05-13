@@ -165,8 +165,11 @@ echo 'NOT IMPLEMENTED'
 echo -n 'Validating wazo-phoned status... '
 echo 'NOT IMPLEMENTED'
 
+echo -n 'Validating wazo-plugind status... '
+echo 'WONT BE IMPLEMENTED'
+
 echo -n 'Validating wazo-setupd status... '
-echo 'NOT IMPLEMENTED'
+echo 'WONT BE IMPLEMENTED'
 
 echo -n 'Getting /api/confd/1.1/users... '
 USERS=$(curl \
