@@ -95,23 +95,81 @@ if [ $(echo $WEBHOOKD_STATUS | jq --raw-output .master_tenant.status) != 'ok' ];
 fi
 echo "SUCCEED"
 
-echo -n 'Validating wazo-calld status... '
-echo 'NOT IMPLEMENTED'
+echo -n 'Validating wazo-dird status... '
+DIRD_STATUS=$(curl \
+  --insecure \
+  --silent \
+  --show-error \
+  --request GET \
+  --header 'Accept: application/json' \
+  --header "X-Auth-Token: $TOKEN" \
+  'https://localhost:8443/api/dird/0.1/status')
+
+if [ $(echo $DIRD_STATUS | jq --raw-output .bus_consumer.status) != 'ok' ]; then
+  echo 'FAILED (bus_consume)'
+  exit 1
+fi
+if [ $(echo $DIRD_STATUS | jq --raw-output .rest_api.status) != 'ok' ]; then
+  echo 'FAILED (rest_api)'
+  exit 1
+fi
+echo "SUCCEED"
+
+echo -n 'Validating wazo-amid status... '
+AMID_STATUS=$(curl \
+  --insecure \
+  --silent \
+  --show-error \
+  --request POST \
+  --header 'Accept: application/json' \
+  --header 'Content-Type: application/json' \
+  --header "X-Auth-Token: $TOKEN" \
+  'https://localhost:8443/api/amid/1.0/action/ping')
+
+if [ $(echo $AMID_STATUS | jq --raw-output .[].Response) != 'Success' ]; then
+  echo 'FAILED (ping action)'
+  exit 1
+fi
+echo "SUCCEED"
 
 echo -n 'Validating wazo-call-logd status... '
+CALL_LOGD_STATUS=$(curl \
+  --insecure \
+  --silent \
+  --show-error \
+  --request GET \
+  --header 'Accept: application/json' \
+  --header "X-Auth-Token: $TOKEN" \
+  'https://localhost:8443/api/call-logd/1.0/status')
+
+if [ $(echo $CALL_LOGD_STATUS | jq --raw-output .bus_consumer.status) != 'ok' ]; then
+  echo 'FAILED (bus_consume)'
+  exit 1
+fi
+if [ $(echo $CALL_LOGD_STATUS | jq --raw-output .task_queue.status) != 'ok' ]; then
+  echo 'FAILED (task_queue)'
+  exit 1
+fi
+if [ $(echo $CALL_LOGD_STATUS | jq --raw-output .service_token.status) != 'ok' ]; then
+  echo 'FAILED (service_token)'
+  exit 1
+fi
+echo "SUCCEED"
+
+echo -n 'Validating wazo-calld status... '
 echo 'NOT IMPLEMENTED'
 
 echo -n 'Validating wazo-chatd status... '
 echo 'NOT IMPLEMENTED'
 
-echo -n 'Validating wazo-dird status... '
-echo 'NOT IMPLEMENTED'
-
 echo -n 'Validating wazo-phoned status... '
 echo 'NOT IMPLEMENTED'
 
+echo -n 'Validating wazo-plugind status... '
+echo 'WONT BE IMPLEMENTED'
+
 echo -n 'Validating wazo-setupd status... '
-echo 'NOT IMPLEMENTED'
+echo 'WONT BE IMPLEMENTED'
 
 echo -n 'Getting /api/confd/1.1/users... '
 USERS=$(curl \

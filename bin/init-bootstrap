@@ -76,6 +76,26 @@ for n in range(retry):
     break
 EOF
 
+# To create default directory sources when tenant will be created
+echo Waiting for wazo-dird...
+python - <<EOF
+import requests, time
+url = 'http://dird:9489/0.1/status'
+retry = $container_timeout
+delay = 1
+for n in range(retry):
+    try:
+        r = requests.get(url)
+    except requests.exceptions.RequestException:
+        if n < retry - 1:
+            time.sleep(delay)
+            continue
+        else:
+            raise
+    print(f'Response: {r}')
+    break
+EOF
+
 TENANT_NAME='my-company'
 if [[ ! $(wazo-auth-cli tenant show $TENANT_NAME) = *$TENANT_NAME* ]]; then
   echo Executing wizard...

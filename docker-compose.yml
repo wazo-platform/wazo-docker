@@ -23,19 +23,19 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./init-db:/docker-entrypoint-initdb.d
-    ports:
+    expose:
       - "5432"
 
   rabbitmq:
     image: rabbitmq
-    ports:
+    expose:
       - "5672"
     volumes:
       - tmp-rabbitmq:/var/lib/rabbitmq:rw
 
   auth:
     image: wazoplatform/wazo-auth
-    ports:
+    expose:
       - 9497
     environment:
       TZ: America/Montreal
@@ -53,7 +53,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-confd
-    ports:
+    expose:
       - 9486
     environment:
       XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
@@ -80,7 +80,7 @@ services:
       dockerfile: Dockerfile-provd
     environment:
       INIT_TIMEOUT: 120
-    ports:
+    expose:
       - 8666
     volumes:
       - ./etc/wazo-confgend-client.conf:/etc/wazo-confgend-client/config.conf:ro
@@ -93,7 +93,7 @@ services:
 
   sysconfd:
     image: wazoplatform/wazo-sysconfd-mock
-    ports:
+    expose:
       - 8668
 
   webhookd:
@@ -101,7 +101,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-webhookd
-    ports:
+    expose:
       - 9300
     environment:
       XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
@@ -123,6 +123,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-asterisk
+    expose:
+      - "5038"  # AMI
+      - "5039"  # HTTP (ARI/AJAM)
     ports:
       - '5060:5060/udp'  # SIP
       - '19980-20000:19980-20000/udp'  # RTP
@@ -133,6 +136,7 @@ services:
       - ./etc/asterisk-extensions.conf:/etc/asterisk/extensions.d/02-docker.conf:ro
       - ./etc/asterisk-odbc.ini:/etc/odbc.ini:ro
       - ./etc/asterisk-res_odbc.conf:/etc/asterisk/res_odbc.d/02-docker.conf:ro
+      - ./etc/asterisk-manager.conf:/etc/asterisk/manager.d/999-docker.conf:ro
       - ./bin/init-asterisk:/bin/asterisk/init:ro
       - asterisk-autoprov:/etc/asterisk/pjsip.d:rw
       - asterisk-doc:/usr/share/asterisk/documentation:rw
@@ -175,9 +179,56 @@ services:
     entrypoint:
       - /bin/wazo-agid/init
 
+  dird:
+    image: wazoplatform/wazo-dird:netcat
+    build:
+      context: .
+      dockerfile: Dockerfile-dird
+    expose:
+      - 9489
+    volumes:
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - ./bin/init-dird:/bin/wazo-dird/init:ro
+      - ./etc/wazo-dird.yml:/etc/wazo-dird/conf.d/config.yml:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/wazo-dird
+        target: /usr/src/wazo-dird  # include alembic script
+        read_only: true
+    entrypoint:
+      - /bin/wazo-dird/init
+
+  amid:
+    image: wazoplatform/wazo-amid
+    environment:
+      XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+    expose:
+      - 9491
+    volumes:
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - ./bin/init-amid:/bin/wazo-amid/init:ro
+      - ./etc/wazo-amid.yml:/etc/wazo-amid/conf.d/config.yml:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+    entrypoint:
+      - /bin/wazo-amid/init
+
+  call-logd:
+    image: wazoplatform/wazo-call-logd
+    environment:
+      XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+    expose:
+      - 9298
+    volumes:
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - ./bin/init-call-logd:/bin/wazo-call-logd/init:ro
+      - ./etc/wazo-call-logd.yml:/etc/wazo-call-logd/conf.d/config.yml:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+    entrypoint:
+      - /bin/wazo-call-logd/init
+
   ui:
     image: wazoplatform/wazo-ui
-    ports:
+    expose:
       - 9296
     volumes:
       - ./etc/wazo-ui.yml:/etc/wazo-ui/conf.d/config.yml:ro

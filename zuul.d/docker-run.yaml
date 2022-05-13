@@ -21,6 +21,11 @@
       args:
         chdir: "{{ zuul.project.src_dir }}"
 
+    - name: clone wazo-dird
+      command: "git clone https://github.com/wazo-platform/wazo-dird.git"
+      args:
+        chdir: "{{ zuul.project.src_dir }}"
+
     - name: Pull images
       command: "docker-compose pull --ignore-pull-failures"
       args:
