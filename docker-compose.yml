@@ -42,7 +42,6 @@ services:
       XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
     volumes:
       - ./etc/wazo-auth.yml:/etc/wazo-auth/conf.d/config.yml:ro
-      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - type: bind
         source: ${LOCAL_GIT_REPOS}/wazo-auth-keys/etc/wazo-auth/conf.d/50-wazo-default-policies.yml
         target: /etc/wazo-auth/conf.d/50-wazo-default-policies.yml
