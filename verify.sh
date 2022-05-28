@@ -199,10 +199,30 @@ if [ $(echo $CHATD_STATUS | jq --raw-output .master_tenant.status) != 'ok' ]; th
 fi
 echo "SUCCEED"
 
+echo -n 'Validating wazo-phoned status... '
+PHONED_STATUS=$(curl \
+  --insecure \
+  --silent \
+  --show-error \
+  --request GET \
+  --header 'Accept: application/json' \
+  --header "X-Auth-Token: $TOKEN" \
+  'https://localhost:8443/api/phoned/0.1/status')
+
+if [ $(echo $PHONED_STATUS | jq --raw-output .bus_consumer.status) != 'ok' ]; then
+  echo 'FAILED (bus_consume)'
+  exit 1
+fi
+if [ $(echo $PHONED_STATUS | jq --raw-output .service_token.status) != 'ok' ]; then
+  echo 'FAILED (service_token)'
+  exit 1
+fi
+echo "SUCCEED"
+
 echo -n 'Validating wazo-calld status... '
 echo 'NOT IMPLEMENTED'
 
-echo -n 'Validating wazo-phoned status... '
+echo -n 'Validating wazo-websocketd status... '
 echo 'NOT IMPLEMENTED'
 
 echo -n 'Validating wazo-plugind status... '

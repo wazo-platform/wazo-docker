@@ -246,6 +246,20 @@ services:
     entrypoint:
       - /bin/wazo-chatd/init
 
+  phoned:
+    image: wazoplatform/wazo-phoned
+    environment:
+      XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+    expose:
+      - 9304
+    volumes:
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - ./bin/init-phoned:/bin/wazo-phoned/init:ro
+      - ./etc/wazo-phoned.yml:/etc/wazo-phoned/conf.d/config.yml:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+    entrypoint:
+      - /bin/wazo-phoned/init
+
   ui:
     image: wazoplatform/wazo-ui
     expose:

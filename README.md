@@ -59,3 +59,10 @@ Contains docker-compose file to setup wazo-platform project
   parameters (mount, config, variable)
 * When running softphone on the same host than docker, don't use 127.0.0.1:5060, but use *public* IP
   (i.e. 192.168.x.x:5060)
+
+## Security
+
+This project has not been developed to be used on production nor exposed on internet
+Here is a non-exhaustive list of security concerns that has been found during development
+
+* wazo-phoned expose all unsecured endpoints through nginx
