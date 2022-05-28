@@ -225,6 +225,27 @@ services:
     entrypoint:
       - /bin/wazo-call-logd/init
 
+  chatd:
+    image: wazoplatform/wazo-chatd:netcat
+    build:
+      context: .
+      dockerfile: Dockerfile-chatd
+    environment:
+      XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+    expose:
+      - 9304
+    volumes:
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - ./bin/init-chatd:/bin/wazo-chatd/init:ro
+      - ./etc/wazo-chatd.yml:/etc/wazo-chatd/conf.d/config.yml:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/wazo-chatd
+        target: /usr/src/wazo-chatd  # include alembic script
+        read_only: true
+    entrypoint:
+      - /bin/wazo-chatd/init
+
   ui:
     image: wazoplatform/wazo-ui
     expose:

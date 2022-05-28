@@ -156,10 +156,50 @@ if [ $(echo $CALL_LOGD_STATUS | jq --raw-output .service_token.status) != 'ok' ]
 fi
 echo "SUCCEED"
 
-echo -n 'Validating wazo-calld status... '
-echo 'NOT IMPLEMENTED'
+function wait_for_wazo_chatd_presence_initialization() {
+    seconds=0
+    timeout=120
+    echo -n 'Waiting for wazo-chatd presence initialization complete'
+    while [ "$seconds" -lt "$timeout" ] && [ "$(curl --insecure --silent --show-error --request GET --header 'Accept: application/json' --header "X-Auth-Token: $TOKEN" 'https://localhost:8443/api/chatd/1.0/status' | jq --raw-output .presence_initialization.status)" != 'ok' ];
+      do
+        echo -n '.'
+        seconds=$((seconds+2))
+        sleep 2
+      done
 
+    echo ' Ready!'
+}
+
+wait_for_wazo_chatd_presence_initialization
 echo -n 'Validating wazo-chatd status... '
+CHATD_STATUS=$(curl \
+  --insecure \
+  --silent \
+  --show-error \
+  --request GET \
+  --header 'Accept: application/json' \
+  --header "X-Auth-Token: $TOKEN" \
+  'https://localhost:8443/api/chatd/1.0/status')
+
+if [ $(echo $CHATD_STATUS | jq --raw-output .bus_consumer.status) != 'ok' ]; then
+  echo 'FAILED (bus_consume)'
+  exit 1
+fi
+if [ $(echo $CHATD_STATUS | jq --raw-output .rest_api.status) != 'ok' ]; then
+  echo 'FAILED (rest_api)'
+  exit 1
+fi
+if [ $(echo $CHATD_STATUS | jq --raw-output .presence_initialization.status) != 'ok' ]; then
+  echo 'FAILED (presence_initialization)'
+  exit 1
+fi
+if [ $(echo $CHATD_STATUS | jq --raw-output .master_tenant.status) != 'ok' ]; then
+  echo 'FAILED (master_tenant)'
+  exit 1
+fi
+echo "SUCCEED"
+
+echo -n 'Validating wazo-calld status... '
 echo 'NOT IMPLEMENTED'
 
 echo -n 'Validating wazo-phoned status... '
