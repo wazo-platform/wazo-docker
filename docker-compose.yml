@@ -141,6 +141,7 @@ services:
       - ./bin/init-asterisk:/bin/asterisk/init:ro
       - asterisk-autoprov:/etc/asterisk/pjsip.d:rw
       - asterisk-doc:/usr/share/asterisk/documentation:rw
+      - asterisk-voicemail:/var/spool/asterisk/voicemail:rw
       # xivo-config has too much dependencies to be installed in the container
       - type: bind
         source: ${LOCAL_GIT_REPOS}/xivo-config/etc/xivo/asterisk
@@ -286,6 +287,7 @@ services:
     environment:
       XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
     volumes:
+      - asterisk-voicemail:/var/spool/asterisk/voicemail:rw
       - ./etc/wazo-calld.yml:/etc/wazo-calld/conf.d/config.yml:ro
       - ./bin/init-calld:/bin/wazo-calld/init:ro
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
@@ -323,4 +325,5 @@ volumes:
   wazo-auth-keys:
   asterisk-autoprov:
   asterisk-doc:
+  asterisk-voicemail:
   tmp-rabbitmq:   # Compatibility for non-Linux systems

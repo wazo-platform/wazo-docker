@@ -7,6 +7,10 @@ source /var/lib/wazo/helpers
 chown asterisk:www-data /etc/asterisk/pjsip.d
 chmod 770 /etc/asterisk/pjsip.d
 
+# Allow wazo-calld to write file
+chown asterisk:www-data /var/spool/asterisk/voicemail
+chmod 770 /var/spool/asterisk/voicemail
+
 db_host='postgres'
 db_port='5432'
 
