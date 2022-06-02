@@ -5,7 +5,9 @@ services:
     ports:
       - '127.0.0.1:8443:443'
     volumes:
+      - ./etc/nginx-auth-shared.conf:/etc/nginx/wazo-auth-shared.conf:ro
       - ./etc/nginx-calld-shared.conf:/etc/nginx/wazo-calld-shared.conf:ro
+      - ./etc/nginx-confd-shared.conf:/etc/nginx/wazo-confd-shared.conf:ro
       - ./etc/nginx-no-auth-shared.conf:/etc/nginx/wazo-no-auth-shared.conf:ro
       - ./etc/nginx.conf:/etc/nginx/conf.d/config.conf:ro
       - ./certs:/certs:ro

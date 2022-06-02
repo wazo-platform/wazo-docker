@@ -66,3 +66,4 @@ This project has not been developed to be used on production nor exposed on inte
 Here is a non-exhaustive list of security concerns that has been found during development
 
 * wazo-phoned expose all unsecured endpoints through nginx
+* nginx configuration can be updated on upstream and be desynchronized with this configuration
