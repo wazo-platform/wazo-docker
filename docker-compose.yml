@@ -260,6 +260,23 @@ services:
     entrypoint:
       - /bin/wazo-phoned/init
 
+  websocketd:
+    image: wazoplatform/wazo-websocketd:netcat
+    build:
+      context: .
+      dockerfile: Dockerfile-websocketd
+    expose:
+      - 9502
+    environment:
+      XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+    volumes:
+      - ./etc/wazo-websocketd.yml:/etc/wazo-websocketd/conf.d/config.yml:ro
+      - ./bin/init-websocketd:/bin/wazo-websocketd/init:ro
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+    entrypoint:
+      - /bin/wazo-websocketd/init
+
   ui:
     image: wazoplatform/wazo-ui
     expose:

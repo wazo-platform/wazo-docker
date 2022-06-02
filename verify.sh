@@ -219,10 +219,30 @@ if [ $(echo $PHONED_STATUS | jq --raw-output .service_token.status) != 'ok' ]; t
 fi
 echo "SUCCEED"
 
-echo -n 'Validating wazo-calld status... '
-echo 'NOT IMPLEMENTED'
-
 echo -n 'Validating wazo-websocketd status... '
+set +e
+# NOTE: curl will exit with error code 52 (empty response from server)
+WEBSOCKETD_CODE=$(curl \
+  --insecure \
+  --silent \
+  --request GET \
+  --head \
+  --header 'Host: localhost:8443' \
+  --header 'Upgrade: websocket' \
+  --header 'Sec-WebSocket-Version: 13' \
+  --header 'Sec-WebSocket-Key: 0000000000000000000000==' \
+  --output /dev/null \
+  --write-out "%{http_code}" \
+  "https://localhost:8443/api/websocketd/?token=$TOKEN&version=2")
+set -e
+
+if [ $WEBSOCKETD_CODE -ne 101 ]; then
+  echo 'FAILED'
+  exit 1
+fi
+echo "SUCCEED"
+
+echo -n 'Validating wazo-calld status... '
 echo 'NOT IMPLEMENTED'
 
 echo -n 'Validating wazo-plugind status... '
