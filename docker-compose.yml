@@ -5,6 +5,8 @@ services:
     ports:
       - '127.0.0.1:8443:443'
     volumes:
+      - ./etc/nginx-calld-shared.conf:/etc/nginx/wazo-calld-shared.conf:ro
+      - ./etc/nginx-no-auth-shared.conf:/etc/nginx/wazo-no-auth-shared.conf:ro
       - ./etc/nginx.conf:/etc/nginx/conf.d/config.conf:ro
       - ./certs:/certs:ro
     depends_on:  # Avoid to fail container if host doesn't exist
@@ -276,6 +278,20 @@ services:
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
     entrypoint:
       - /bin/wazo-websocketd/init
+
+  calld:
+    image: wazoplatform/wazo-calld
+    expose:
+      - 9491
+    environment:
+      XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+    volumes:
+      - ./etc/wazo-calld.yml:/etc/wazo-calld/conf.d/config.yml:ro
+      - ./bin/init-calld:/bin/wazo-calld/init:ro
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+    entrypoint:
+      - /bin/wazo-calld/init
 
   ui:
     image: wazoplatform/wazo-ui

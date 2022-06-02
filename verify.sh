@@ -243,13 +243,34 @@ fi
 echo "SUCCEED"
 
 echo -n 'Validating wazo-calld status... '
-echo 'NOT IMPLEMENTED'
+CALLD_STATUS=$(curl \
+  --insecure \
+  --silent \
+  --show-error \
+  --request GET \
+  --header 'Accept: application/json' \
+  --header "X-Auth-Token: $TOKEN" \
+  'https://localhost:8443/api/calld/1.0/status')
+
+if [ $(echo $CALLD_STATUS | jq --raw-output .ari.status) != 'ok' ]; then
+  echo 'FAILED (ari)'
+  exit 1
+fi
+if [ $(echo $CALLD_STATUS | jq --raw-output .bus_consumer.status) != 'ok' ]; then
+  echo 'FAILED (bus_consumer)'
+  exit 1
+fi
+if [ $(echo $CALLD_STATUS | jq --raw-output .service_token.status) != 'ok' ]; then
+  echo 'FAILED (service_token)'
+  exit 1
+fi
+echo "SUCCEED"
 
 echo -n 'Validating wazo-plugind status... '
-echo 'WONT BE IMPLEMENTED'
+echo "WON'T BE IMPLEMENTED"
 
 echo -n 'Validating wazo-setupd status... '
-echo 'WONT BE IMPLEMENTED'
+echo "WON'T BE IMPLEMENTED"
 
 echo -n 'Getting /api/confd/1.1/users... '
 USERS=$(curl \
