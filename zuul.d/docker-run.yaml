@@ -6,8 +6,13 @@
       args:
         chdir: "{{ zuul.project.src_dir }}"
 
-    - name: clone xivo-manage-db
-      command: "git clone https://github.com/wazo-platform/xivo-manage-db.git"
+    - name: clone wazo-chatd
+      command: "git clone https://github.com/wazo-platform/wazo-chatd.git"
+      args:
+        chdir: "{{ zuul.project.src_dir }}"
+
+    - name: clone wazo-dird
+      command: "git clone https://github.com/wazo-platform/wazo-dird.git"
       args:
         chdir: "{{ zuul.project.src_dir }}"
 
@@ -21,8 +26,8 @@
       args:
         chdir: "{{ zuul.project.src_dir }}"
 
-    - name: clone wazo-dird
-      command: "git clone https://github.com/wazo-platform/wazo-dird.git"
+    - name: clone xivo-manage-db
+      command: "git clone https://github.com/wazo-platform/xivo-manage-db.git"
       args:
         chdir: "{{ zuul.project.src_dir }}"
 
