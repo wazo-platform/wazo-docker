@@ -59,6 +59,12 @@ Contains docker-compose file to setup wazo-platform project
   parameters (mount, config, variable)
 * When running softphone on the same host than docker, don't use 127.0.0.1:5060, but use *public* IP
   (i.e. 192.168.x.x:5060)
+* asterisk configuration are not reload automatically. You must:
+  ```bash
+  docker-compose exec asterisk bash
+  wazo-confgen asterisk/pjsip.conf --invalidate
+  asterisk -rx 'core reload'
+  ```
 
 ## Security
 
