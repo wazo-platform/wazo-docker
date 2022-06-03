@@ -12,6 +12,7 @@ services:
       - ./etc/nginx.conf:/etc/nginx/conf.d/config.conf:ro
       - ./certs:/certs:ro
     depends_on:  # Avoid to fail container if host doesn't exist
+      - agentd
       - amid
       - asterisk
       - auth
@@ -304,6 +305,20 @@ services:
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
     entrypoint:
       - /bin/wazo-calld/init
+
+  agentd:
+    image: wazoplatform/wazo-agentd
+    expose:
+      - 9493
+    environment:
+      XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+    volumes:
+      - ./etc/wazo-agentd.yml:/etc/wazo-agentd/conf.d/config.yml:ro
+      - ./bin/init-agentd:/bin/wazo-agentd/init:ro
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+    entrypoint:
+      - /bin/wazo-agentd/init
 
   ui:
     image: wazoplatform/wazo-ui

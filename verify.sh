@@ -266,6 +266,23 @@ if [ $(echo $CALLD_STATUS | jq --raw-output .service_token.status) != 'ok' ]; th
 fi
 echo "SUCCEED"
 
+echo -n 'Validating wazo-agentd status... '
+AGENTD_CODE=$(curl \
+  --insecure \
+  --silent \
+  --show-error \
+  --request GET \
+  --header "X-Auth-Token: $TOKEN" \
+  --output /dev/null \
+  --write-out "%{http_code}" \
+  'https://localhost:8443/api/agentd/1.0/agents')
+
+if [ $AGENTD_CODE -ne 200 ]; then
+  echo 'FAILED'
+  exit 1
+fi
+echo "SUCCEED"
+
 echo -n 'Validating wazo-plugind status... '
 echo "WON'T BE IMPLEMENTED"
 
