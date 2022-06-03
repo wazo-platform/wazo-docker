@@ -135,6 +135,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-asterisk
+    # Default hostname (ex: 961d946e0e66) is not compatible with sip stack used by wazo-js-sdk (SIP.js)
+    hostname: asterisk.wazo-docker
     expose:
       - "5038"  # AMI
       - "5039"  # HTTP (ARI/AJAM)
