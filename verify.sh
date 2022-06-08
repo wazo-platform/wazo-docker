@@ -115,6 +115,21 @@ if [ "$(echo $DIRD_STATUS | jq --raw-output .rest_api.status)" != 'ok' ]; then
 fi
 echo "SUCCEED"
 
+function wait_for_wazo_amid_asterisk_connection() {
+    seconds=0
+    timeout=120
+    echo -n 'Waiting for wazo-amid asterisk connection'
+    while [ "$seconds" -lt "$timeout" ] && [ "$(curl --insecure --silent --request POST --output /dev/null --write-out "%{http_code}" --header 'Content-type: application/json' --header 'Accept: application/json' --header "X-Auth-Token: $TOKEN" 'https://localhost:8443/api/amid/1.0/action/ping')" -eq 503 ];
+      do
+        echo -n '.'
+        seconds=$((seconds+2))
+        sleep 2
+      done
+
+    echo ' Ready!'
+}
+
+wait_for_wazo_amid_asterisk_connection
 echo -n 'Validating wazo-amid status... '
 AMID_STATUS=$(curl \
   --insecure \
