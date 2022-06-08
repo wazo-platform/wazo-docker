@@ -1,0 +1,18 @@
+---
+- hosts: all
+  tasks:
+    - name: Output logs
+      shell: "docker-compose logs > /tmp/docker-compose.log 2>&1"
+      args:
+        chdir: "{{ zuul.project.src_dir }}"
+      environment:
+        LOCAL_GIT_REPOS: "."
+
+    - name: Upload logs
+      synchronize:
+        src: "/tmp/docker-compose.log"
+        dest: "{{ zuul.executor.log_root }}"
+        mode: pull
+        copy_links: true
+        verify_host: true
+        rsync_opts: []
