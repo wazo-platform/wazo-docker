@@ -143,6 +143,8 @@ services:
     ports:
       - '5060:5060/udp'  # SIP
       - '19980-20000:19980-20000/udp'  # RTP
+    environment:
+      INIT_TIMEOUT: 120
     volumes:
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - ./etc/wazo-confgend-client.conf:/etc/wazo-confgend-client/config.conf:ro
@@ -181,6 +183,8 @@ services:
       dockerfile: Dockerfile-agid
     expose:
       - 4573
+    environment:
+      INIT_TIMEOUT: 120
     volumes:
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - ./bin/init-agid:/bin/wazo-agid/init:ro
@@ -199,6 +203,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-dird
+    environment:
+      INIT_TIMEOUT: 120
     expose:
       - 9489
     volumes:
@@ -217,6 +223,7 @@ services:
     image: wazoplatform/wazo-amid
     environment:
       XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+      INIT_TIMEOUT: 120
     expose:
       - 9491
     volumes:
@@ -231,6 +238,7 @@ services:
     image: wazoplatform/wazo-call-logd
     environment:
       XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+      INIT_TIMEOUT: 120
     expose:
       - 9298
     volumes:
@@ -248,6 +256,7 @@ services:
       dockerfile: Dockerfile-chatd
     environment:
       XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+      INIT_TIMEOUT: 120
     expose:
       - 9304
     volumes:
@@ -266,6 +275,7 @@ services:
     image: wazoplatform/wazo-phoned
     environment:
       XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+      INIT_TIMEOUT: 120
     expose:
       - 9304
     volumes:
@@ -285,6 +295,7 @@ services:
       - 9502
     environment:
       XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+      INIT_TIMEOUT: 120
     volumes:
       - ./etc/wazo-websocketd.yml:/etc/wazo-websocketd/conf.d/config.yml:ro
       - ./bin/init-websocketd:/bin/wazo-websocketd/init:ro
@@ -299,6 +310,7 @@ services:
       - 9491
     environment:
       XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+      INIT_TIMEOUT: 120
     volumes:
       - asterisk-voicemail:/var/spool/asterisk/voicemail:rw
       - ./etc/wazo-calld.yml:/etc/wazo-calld/conf.d/config.yml:ro
@@ -314,6 +326,7 @@ services:
       - 9493
     environment:
       XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+      INIT_TIMEOUT: 120
     volumes:
       - ./etc/wazo-agentd.yml:/etc/wazo-agentd/conf.d/config.yml:ro
       - ./bin/init-agentd:/bin/wazo-agentd/init:ro
