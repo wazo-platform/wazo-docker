@@ -9,16 +9,12 @@ Contains docker-compose file to setup wazo-platform project
 * Install docker and docker-compose
 * Clone the following repositories
     * wazo-platform/wazo-auth-keys
-    * wazo-platform/wazo-chatd
-    * wazo-platform/wazo-dird
-    * wazo-platform/wazo-webhookd
     * wazo-platform/xivo-config
-    * wazo-platform/xivo-manage-db
 * set environment variable `LOCAL_GIT_REPOS=<path/to/cloned/repositories>`
 
 ## Prepare Environment
 
-* `for repo in wazo-auth-keys wazo-chatd wazo-dird wazo-webhookd xivo-config xivo-manage-db; do git -C "$LOCAL_GIT_REPOS/$repo" pull; done`
+* `for repo in wazo-auth-keys xivo-config; do git -C "$LOCAL_GIT_REPOS/$repo" pull; done`
 * `docker-compose pull --ignore-pull-failures`
 * `docker-compose build --pull`
 

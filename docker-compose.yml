@@ -82,10 +82,6 @@ services:
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
       - asterisk-autoprov:/etc/asterisk/pjsip.d:rw  # write 05-autoprov-wizard.conf
       - asterisk-doc:/var/lib/wazo-confd/asterisk-doc:ro
-      - type: bind
-        source: ${LOCAL_GIT_REPOS}/xivo-manage-db
-        target: /usr/share/xivo-manage-db
-        read_only: true
     entrypoint:
       - /bin/wazo-confd/init
 
@@ -128,10 +124,6 @@ services:
       - ./bin/init-webhookd:/bin/wazo-webhookd/init:ro
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
-      - type: bind
-        source: ${LOCAL_GIT_REPOS}/wazo-webhookd
-        target: /usr/src/wazo-webhookd  # include alembic script
-        read_only: true
     entrypoint:
       - /bin/wazo-webhookd/init
 
@@ -219,10 +211,6 @@ services:
       - ./bin/init-dird:/bin/wazo-dird/init:ro
       - ./etc/wazo-dird.yml:/etc/wazo-dird/conf.d/config.yml:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
-      - type: bind
-        source: ${LOCAL_GIT_REPOS}/wazo-dird
-        target: /usr/src/wazo-dird  # include alembic script
-        read_only: true
     entrypoint:
       - /bin/wazo-dird/init
 
@@ -268,10 +256,6 @@ services:
       - ./bin/init-chatd:/bin/wazo-chatd/init:ro
       - ./etc/wazo-chatd.yml:/etc/wazo-chatd/conf.d/config.yml:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
-      - type: bind
-        source: ${LOCAL_GIT_REPOS}/wazo-chatd
-        target: /usr/src/wazo-chatd  # include alembic script
-        read_only: true
     entrypoint:
       - /bin/wazo-chatd/init
 
