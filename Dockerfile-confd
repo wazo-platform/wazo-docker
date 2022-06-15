@@ -10,5 +10,5 @@ RUN true \
     && mkdir -p /var/lib/wazo-confd \
     && mkdir -p /usr/lib/xivo-manage-db \
     && ln -s /opt/venv/bin/pg-populate-db /usr/lib/xivo-manage-db/pg-populate-db \
-    && apt-get update && apt-get install -y postgresql-client netcat git \
-    && git clone https://github.com/wazo-platform/xivo-manage-db.git /usr/share/xivo-manage-db
+    && apt-get update && apt-get install -y postgresql-client netcat wget \
+    && wget -q -O- https://github.com/wazo-platform/xivo-manage-db/archive/master.tar.gz | tar -xz -C /usr/share --transform s/-master//

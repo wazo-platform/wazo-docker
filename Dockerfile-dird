@@ -1,4 +1,4 @@
 FROM wazoplatform/wazo-dird
 
-RUN apt-get update && apt-get install -y netcat git
-RUN git clone https://github.com/wazo-platform/wazo-dird.git /usr/src/wazo-dird
+RUN apt-get update && apt-get install -y netcat wget
+RUN wget -q -O- https://github.com/wazo-platform/wazo-dird/archive/master.tar.gz | tar -xz -C /usr/src --transform s/-master//

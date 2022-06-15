@@ -2,12 +2,12 @@
 - hosts: all
   tasks:
     - name: clone wazo-auth-key
-      command: "git clone https://github.com/wazo-platform/wazo-auth-keys.git"
+      command: "git clone --depth=1 https://github.com/wazo-platform/wazo-auth-keys.git"
       args:
         chdir: "{{ zuul.project.src_dir }}"
 
     - name: clone xivo-config
-      command: "git clone https://github.com/wazo-platform/xivo-config.git"
+      command: "git clone --depth=1 https://github.com/wazo-platform/xivo-config.git"
       args:
         chdir: "{{ zuul.project.src_dir }}"
 
