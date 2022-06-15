@@ -69,3 +69,5 @@ Here is a non-exhaustive list of security concerns that has been found during de
 
 * wazo-phoned expose all unsecured endpoints through nginx
 * nginx configuration can be updated on upstream and be desynchronized with this configuration
+* Container images embed the `netcat` tool that can be used to open a remote shell.
+* Credentials are hardcoded
