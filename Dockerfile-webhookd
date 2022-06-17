@@ -1,4 +1,4 @@
 FROM wazoplatform/wazo-webhookd
 
-RUN true \
-    && apt-get update && apt-get install -y netcat
+RUN apt-get update && apt-get install -y netcat wget
+RUN wget -q -O- https://github.com/wazo-platform/wazo-webhookd/archive/master.tar.gz | tar -xz -C /usr/src --transform s/-master//

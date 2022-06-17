@@ -4,15 +4,30 @@ services:
     image: nginx
     ports:
       - '127.0.0.1:8443:443'
+    env_file:
+      - variables.env
     volumes:
+      - ./etc/nginx-auth-shared.conf:/etc/nginx/wazo-auth-shared.conf:ro
+      - ./etc/nginx-calld-shared.conf:/etc/nginx/wazo-calld-shared.conf:ro
+      - ./etc/nginx-confd-shared.conf:/etc/nginx/wazo-confd-shared.conf:ro
+      - ./etc/nginx-no-auth-shared.conf:/etc/nginx/wazo-no-auth-shared.conf:ro
       - ./etc/nginx.conf:/etc/nginx/conf.d/config.conf:ro
       - ./certs:/certs:ro
     depends_on:  # Avoid to fail container if host doesn't exist
-      - ui
+      - agentd
+      - amid
+      - asterisk
       - auth
+      - call-logd
+      - calld
+      - chatd
       - confd
+      - dird
+      - phoned
       - provd
+      - ui
       - webhookd
+      - websocketd
 
   postgres:
     image: postgres:11  # Must use compatible version than the odbc_postgresql installed in asterisk container
@@ -20,6 +35,8 @@ services:
       POSTGRES_DB: wazo
       POSTGRES_USER: asterisk  # reason: hardcoded in populate.sql
       POSTGRES_PASSWORD: secret
+    env_file:
+      - variables.env
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./init-db:/docker-entrypoint-initdb.d
@@ -28,6 +45,8 @@ services:
 
   rabbitmq:
     image: rabbitmq
+    env_file:
+      - variables.env
     expose:
       - "5672"
     volumes:
@@ -35,14 +54,12 @@ services:
 
   auth:
     image: wazoplatform/wazo-auth
+    env_file:
+      - variables.env
     expose:
       - 9497
-    environment:
-      TZ: America/Montreal
-      XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
     volumes:
       - ./etc/wazo-auth.yml:/etc/wazo-auth/conf.d/config.yml:ro
-      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - type: bind
         source: ${LOCAL_GIT_REPOS}/wazo-auth-keys/etc/wazo-auth/conf.d/50-wazo-default-policies.yml
         target: /etc/wazo-auth/conf.d/50-wazo-default-policies.yml
@@ -53,11 +70,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-confd
+    env_file:
+      - variables.env
     expose:
       - 9486
-    environment:
-      XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
-      INIT_TIMEOUT: 120
     volumes:
       - ./etc/wazo-confd.yml:/etc/wazo-confd/conf.d/config.yml:ro
       - ./etc/xivo-dao.yml:/etc/xivo-dao/conf.d/config.yml:ro
@@ -66,10 +82,6 @@ services:
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
       - asterisk-autoprov:/etc/asterisk/pjsip.d:rw  # write 05-autoprov-wizard.conf
       - asterisk-doc:/var/lib/wazo-confd/asterisk-doc:ro
-      - type: bind
-        source: ${LOCAL_GIT_REPOS}/xivo-manage-db
-        target: /usr/share/xivo-manage-db
-        read_only: true
     entrypoint:
       - /bin/wazo-confd/init
 
@@ -78,8 +90,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-provd
-    environment:
-      INIT_TIMEOUT: 120
+    env_file:
+      - variables.env
     expose:
       - 8666
     volumes:
@@ -93,6 +105,8 @@ services:
 
   sysconfd:
     image: wazoplatform/wazo-sysconfd-mock
+    env_file:
+      - variables.env
     expose:
       - 8668
 
@@ -101,20 +115,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-webhookd
+    env_file:
+      - variables.env
     expose:
       - 9300
-    environment:
-      XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
-      INIT_TIMEOUT: 120
     volumes:
       - ./etc/wazo-webhookd.yml:/etc/wazo-webhookd/conf.d/config.yml:ro
       - ./bin/init-webhookd:/bin/wazo-webhookd/init:ro
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
-      - type: bind
-        source: ${LOCAL_GIT_REPOS}/wazo-webhookd
-        target: /usr/src/wazo-webhookd  # include alembic script
-        read_only: true
     entrypoint:
       - /bin/wazo-webhookd/init
 
@@ -123,6 +132,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-asterisk
+    # Default hostname (ex: 961d946e0e66) is not compatible with sip stack used by wazo-js-sdk (SIP.js)
+    hostname: asterisk.wazo-docker
+    env_file:
+      - variables.env
     expose:
       - "5038"  # AMI
       - "5039"  # HTTP (ARI/AJAM)
@@ -140,6 +153,7 @@ services:
       - ./bin/init-asterisk:/bin/asterisk/init:ro
       - asterisk-autoprov:/etc/asterisk/pjsip.d:rw
       - asterisk-doc:/usr/share/asterisk/documentation:rw
+      - asterisk-voicemail:/var/spool/asterisk/voicemail:rw
       # xivo-config has too much dependencies to be installed in the container
       - type: bind
         source: ${LOCAL_GIT_REPOS}/xivo-config/etc/xivo/asterisk
@@ -154,6 +168,8 @@ services:
 
   confgend:
     image: wazoplatform/wazo-confgend
+    env_file:
+      - variables.env
     expose:
       - 8669
     volumes:
@@ -164,6 +180,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-agid
+    env_file:
+      - variables.env
     expose:
       - 4573
     volumes:
@@ -184,6 +202,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-dird
+    env_file:
+      - variables.env
     expose:
       - 9489
     volumes:
@@ -191,17 +211,13 @@ services:
       - ./bin/init-dird:/bin/wazo-dird/init:ro
       - ./etc/wazo-dird.yml:/etc/wazo-dird/conf.d/config.yml:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
-      - type: bind
-        source: ${LOCAL_GIT_REPOS}/wazo-dird
-        target: /usr/src/wazo-dird  # include alembic script
-        read_only: true
     entrypoint:
       - /bin/wazo-dird/init
 
   amid:
     image: wazoplatform/wazo-amid
-    environment:
-      XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+    env_file:
+      - variables.env
     expose:
       - 9491
     volumes:
@@ -214,8 +230,8 @@ services:
 
   call-logd:
     image: wazoplatform/wazo-call-logd
-    environment:
-      XIVO_UUID: "00000000-0000-4000-8000-0000000AA450"
+    env_file:
+      - variables.env
     expose:
       - 9298
     volumes:
@@ -226,8 +242,87 @@ services:
     entrypoint:
       - /bin/wazo-call-logd/init
 
+  chatd:
+    image: wazoplatform/wazo-chatd:netcat
+    build:
+      context: .
+      dockerfile: Dockerfile-chatd
+    env_file:
+      - variables.env
+    expose:
+      - 9304
+    volumes:
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - ./bin/init-chatd:/bin/wazo-chatd/init:ro
+      - ./etc/wazo-chatd.yml:/etc/wazo-chatd/conf.d/config.yml:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+    entrypoint:
+      - /bin/wazo-chatd/init
+
+  phoned:
+    image: wazoplatform/wazo-phoned
+    env_file:
+      - variables.env
+    expose:
+      - 9304
+    volumes:
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - ./bin/init-phoned:/bin/wazo-phoned/init:ro
+      - ./etc/wazo-phoned.yml:/etc/wazo-phoned/conf.d/config.yml:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+    entrypoint:
+      - /bin/wazo-phoned/init
+
+  websocketd:
+    image: wazoplatform/wazo-websocketd:netcat
+    build:
+      context: .
+      dockerfile: Dockerfile-websocketd
+    env_file:
+      - variables.env
+    expose:
+      - 9502
+    volumes:
+      - ./etc/wazo-websocketd.yml:/etc/wazo-websocketd/conf.d/config.yml:ro
+      - ./bin/init-websocketd:/bin/wazo-websocketd/init:ro
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+    entrypoint:
+      - /bin/wazo-websocketd/init
+
+  calld:
+    image: wazoplatform/wazo-calld
+    env_file:
+      - variables.env
+    expose:
+      - 9491
+    volumes:
+      - asterisk-voicemail:/var/spool/asterisk/voicemail:rw
+      - ./etc/wazo-calld.yml:/etc/wazo-calld/conf.d/config.yml:ro
+      - ./bin/init-calld:/bin/wazo-calld/init:ro
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+    entrypoint:
+      - /bin/wazo-calld/init
+
+  agentd:
+    image: wazoplatform/wazo-agentd
+    env_file:
+      - variables.env
+    expose:
+      - 9493
+    volumes:
+      - ./etc/wazo-agentd.yml:/etc/wazo-agentd/conf.d/config.yml:ro
+      - ./bin/init-agentd:/bin/wazo-agentd/init:ro
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+    entrypoint:
+      - /bin/wazo-agentd/init
+
   ui:
     image: wazoplatform/wazo-ui
+    env_file:
+      - variables.env
     expose:
       - 9296
     volumes:
@@ -238,8 +333,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-bootstrap
-    environment:
-      INIT_TIMEOUT: 120
+    env_file:
+      - variables.env
     volumes:
       - ./bin/init-bootstrap:/bin/platform-bootstrap/init:ro
       - ./etc/wazo-auth-cli.yml:/etc/wazo-auth-cli/conf.d/config.yml:ro
@@ -256,4 +351,5 @@ volumes:
   wazo-auth-keys:
   asterisk-autoprov:
   asterisk-doc:
+  asterisk-voicemail:
   tmp-rabbitmq:   # Compatibility for non-Linux systems

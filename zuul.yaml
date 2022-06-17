@@ -2,6 +2,7 @@
     name: wazo-docker-uc
     description: Install Wazo Platform docker images
     run: zuul.d/docker-run.yaml
+    post-run: zuul.d/fetch-logs.yaml
 
 - project:
     check:

@@ -1,0 +1,18 @@
+---
+- hosts: all
+  tasks:
+    - name: Extract docker-compose logs
+      shell: "docker-compose logs --no-color --timestamps | gzip -9 > docker-compose.logs.txt.gz"
+      args:
+        chdir: "{{ zuul.project.src_dir }}"
+      environment:
+        LOCAL_GIT_REPOS: "."
+
+    - name: Upload docker-compose logs
+      synchronize:
+        src: "{{ zuul.project.src_dir }}/docker-compose.logs.txt.gz"
+        dest: "{{ zuul.executor.log_root }}"
+        mode: pull
+        copy_links: true
+        verify_host: true
+        rsync_opts: []

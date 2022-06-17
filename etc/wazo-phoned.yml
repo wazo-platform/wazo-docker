@@ -1,0 +1,22 @@
+debug: true
+rest_api:
+  # WARNING: Expose all unsecured endpoints to outside
+  authorized_subnets: [0.0.0.0/0]
+
+bus:
+  host: rabbitmq
+
+auth:
+  host: auth
+
+dird:
+  host: dird
+
+amid:
+  host: amid
+
+confd:
+  host: confd
+
+service_discovery:
+  enabled: false

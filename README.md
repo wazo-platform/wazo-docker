@@ -9,15 +9,12 @@ Contains docker-compose file to setup wazo-platform project
 * Install docker and docker-compose
 * Clone the following repositories
     * wazo-platform/wazo-auth-keys
-    * wazo-platform/wazo-dird
-    * wazo-platform/wazo-webhookd
     * wazo-platform/xivo-config
-    * wazo-platform/xivo-manage-db
 * set environment variable `LOCAL_GIT_REPOS=<path/to/cloned/repositories>`
 
 ## Prepare Environment
 
-* `for repo in wazo-auth-keys wazo-dird wazo-webhookd xivo-config xivo-manage-db; do git -C "$LOCAL_GIT_REPOS/$repo" pull; done`
+* `for repo in wazo-auth-keys xivo-config; do git -C "$LOCAL_GIT_REPOS/$repo" pull; done`
 * `docker-compose pull --ignore-pull-failures`
 * `docker-compose build --pull`
 
@@ -58,3 +55,19 @@ Contains docker-compose file to setup wazo-platform project
   parameters (mount, config, variable)
 * When running softphone on the same host than docker, don't use 127.0.0.1:5060, but use *public* IP
   (i.e. 192.168.x.x:5060)
+* asterisk configuration are not reload automatically. You must:
+  ```bash
+  docker-compose exec asterisk bash
+  wazo-confgen asterisk/pjsip.conf --invalidate
+  asterisk -rx 'core reload'
+  ```
+
+## Security
+
+This project has not been developed to be used on production nor exposed on internet
+Here is a non-exhaustive list of security concerns that has been found during development
+
+* wazo-phoned expose all unsecured endpoints through nginx
+* nginx configuration can be updated on upstream and be desynchronized with this configuration
+* Container images embed the `netcat` tool that can be used to open a remote shell.
+* Credentials are hardcoded

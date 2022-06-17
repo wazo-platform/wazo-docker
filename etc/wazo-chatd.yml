@@ -1,0 +1,20 @@
+debug: true
+rest_api:
+  listen: 0.0.0.0
+
+db_uri: postgresql://asterisk:secret@postgres/wazo
+
+bus:
+  host: rabbitmq
+
+auth:
+  host: auth
+
+amid:
+  host: amid
+
+confd:
+  host: confd
+
+service_discovery:
+  enabled: false
