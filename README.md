@@ -16,6 +16,7 @@ Contains docker-compose file to setup wazo-platform project
 
 * `for repo in wazo-auth-keys xivo-config; do git -C "$LOCAL_GIT_REPOS/$repo" pull; done`
 * `docker-compose pull --ignore-pull-failures`
+  * Note: A lot of images won't be found on registry since they are built locally
 * `docker-compose build --pull`
 
 ## Start Environment
