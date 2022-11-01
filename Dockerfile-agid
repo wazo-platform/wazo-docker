@@ -1,4 +1,0 @@
-FROM wazoplatform/wazo-agid
-
-RUN true \
-    && apt-get update && apt-get install -y netcat

@@ -177,10 +177,7 @@ services:
       - ./etc/wazo-confgend.yml:/etc/wazo-confgend/conf.d/config.yml:ro
 
   agid:
-    image: wazoplatform/wazo-agid:netcat
-    build:
-      context: .
-      dockerfile: Dockerfile-agid
+    image: wazoplatform/wazo-agid
     env_file:
       - variables.env
     expose:
