@@ -15,6 +15,11 @@ function wait_for_bootstrap_complete() {
         sleep 2
       done
 
+    if [ "$seconds" -ge "$timeout" ]; then
+        echo ' Timeout!'
+        exit 1
+    fi
+
     echo ' Ready!'
 }
 
@@ -181,6 +186,11 @@ function wait_for_wazo_chatd_presence_initialization() {
         seconds=$((seconds+2))
         sleep 2
       done
+
+    if [ "$seconds" -ge "$timeout" ]; then
+        echo ' Timeout!'
+        exit 1
+    fi
 
     echo ' Ready!'
 }
