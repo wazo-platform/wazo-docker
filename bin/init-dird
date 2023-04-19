@@ -24,7 +24,7 @@ wait_for_file /var/lib/wazo-auth-keys/wazo-dird-wazo-backend-key.yml
 wait_for_file /var/lib/wazo-auth-keys/wazo-dird-conference-backend-key.yml
 
 echo Waiting for ugly hack to be applied on auto-created profiles...
-FILE=/opt/venv/lib/python3.7/site-packages/wazo_dird-1.2-py3.7.egg/wazo_dird/plugins/config_service/plugin.py
+FILE=/opt/venv/lib/python3.9/site-packages/wazo_dird-1.2-py3.9.egg/wazo_dird/plugins/config_service/plugin.py
 for CONFIG in CONFERENCE_SOURCE_BODY WAZO_SOURCE_BODY OFFICE_365_SOURCE_BODY GOOGLE_SOURCE_BODY; do
   NEW_CONFIG=$(python - <<EOF
 from wazo_dird.plugins.config_service import plugin

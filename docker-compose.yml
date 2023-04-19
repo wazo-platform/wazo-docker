@@ -31,7 +31,7 @@ services:
       - websocketd
 
   postgres:
-    image: postgres:11  # Must use compatible version than the odbc_postgresql installed in asterisk container
+    image: postgres:13  # Must use compatible version than the odbc_postgresql installed in asterisk container
     environment:
       POSTGRES_DB: wazo
       POSTGRES_USER: asterisk  # reason: hardcoded in populate.sql
