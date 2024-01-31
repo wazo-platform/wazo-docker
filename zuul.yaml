@@ -8,8 +8,8 @@
     wazo-check:
       jobs:
         - wazo-docker-uc:
-            nodeset: vm-debian-10-m1s
+            nodeset: vm-debian-11-m1s
     wazo-gate:
       jobs:
         - wazo-docker-uc:
-            nodeset: vm-debian-10-m1s
+            nodeset: vm-debian-11-m1s
