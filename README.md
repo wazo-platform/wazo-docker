@@ -17,7 +17,7 @@ Contains docker-compose file to setup wazo-platform project
 * `for repo in wazo-auth-keys xivo-config; do git -C "$LOCAL_GIT_REPOS/$repo" pull; done`
 * `docker-compose pull --ignore-pull-failures`
   * Note: A lot of images won't be found on registry since they are built locally
-* `docker-compose build --pull`
+* `docker-compose build --pull --no-cache`
 
 ### Use Development Branch Environment
 If you want to use a feature in development. You can override docker image from a local folder with
@@ -26,7 +26,7 @@ the following steps:
 * `cd /<path>/<to>/wazo-<service>/`
 * `docker build -t wazoplatform/wazo-<service>:latest .`
 * `cd /<path>/<to>/wazo-docker/`
-*  `docker compose build <service>`
+* `docker compose build <service> --no-cache`
 * `docker compose up -d`
 
 > **Where `<service>` can be**: `asterisk`, `bootstrap`, `chatd`, `confd`, `dird`, `provd`, `webhookd`, `websocketd`, `auth`, `deployd`
