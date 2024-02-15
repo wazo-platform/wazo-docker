@@ -54,6 +54,7 @@ the following steps:
 
 ## Troubleshooting
 
+* A good starting point for debugging is the `bootstrap` container log
 * To get sql prompt: `docker-compose exec postgres psql -U asterisk wazo`
 * To use wazo-auth-cli: `docker-compose run --entrypoint bash bootstrap`
 * To update only one service without restarting everything
