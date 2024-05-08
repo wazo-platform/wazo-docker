@@ -12,21 +12,21 @@
         chdir: "{{ zuul.project.src_dir }}"
 
     - name: Pull images
-      command: "docker-compose pull --ignore-pull-failures"
+      command: "docker compose pull --ignore-pull-failures"
       args:
         chdir: "{{ zuul.project.src_dir }}"
       environment:
         LOCAL_GIT_REPOS: "."
 
     - name: Build images
-      command: "docker-compose build --pull"
+      command: "docker compose build --pull"
       args:
         chdir: "{{ zuul.project.src_dir }}"
       environment:
         LOCAL_GIT_REPOS: "."
 
-    - name: Launch docker-compose to test docker images
-      command: "docker-compose up --detach"
+    - name: Launch docker compose to test docker images
+      command: "docker compose up --detach"
       args:
         chdir: "{{ zuul.project.src_dir }}"
       environment:
