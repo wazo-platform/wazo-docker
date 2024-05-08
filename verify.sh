@@ -8,7 +8,7 @@ function wait_for_bootstrap_complete() {
     seconds=0
     timeout=120
     echo -n 'Waiting for bootstrap complete'
-    while [ "$seconds" -lt "$timeout" ] && [ "$(docker-compose ps --all --format json bootstrap | jq --raw-output .[0].State)" != 'exited' ];
+    while [ "$seconds" -lt "$timeout" ] && [ "$(docker compose ps --all --format json bootstrap | jq --raw-output .State)" != 'exited' ];
       do
         echo -n '.'
         seconds=$((seconds+2))
@@ -26,7 +26,7 @@ function wait_for_bootstrap_complete() {
 wait_for_bootstrap_complete
 
 echo -n 'Validating bootstrap exit status... '
-BOOTSTRAP_EXIT_CODE=$(docker-compose ps --all --status exited --format json bootstrap | jq --raw-output .[0].ExitCode)
+BOOTSTRAP_EXIT_CODE=$(docker compose ps --all --status exited --format json bootstrap | jq --raw-output .ExitCode)
 if [ "$BOOTSTRAP_EXIT_CODE" -ne 0 ]; then
     echo 'FAILED'
     exit 1

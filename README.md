@@ -2,11 +2,11 @@
 
 ## **WARNING**: Everything in this repo is experimental and not ready for the production
 
-Contains docker-compose file to setup wazo-platform project
+Contains docker compose file to setup wazo-platform project
 
 ## Prerequisite
 
-* Install docker and docker-compose
+* Install docker
 * Clone the following repositories
     * wazo-platform/wazo-auth-keys
     * wazo-platform/xivo-config
@@ -15,9 +15,9 @@ Contains docker-compose file to setup wazo-platform project
 ## Prepare Environment
 
 * `for repo in wazo-auth-keys xivo-config; do git -C "$LOCAL_GIT_REPOS/$repo" pull; done`
-* `docker-compose pull --ignore-pull-failures`
+* `docker compose pull --ignore-pull-failures`
   * Note: A lot of images won't be found on registry since they are built locally
-* `docker-compose build --pull --no-cache`
+* `docker compose build --pull --no-cache`
 
 ### Use Development Branch Environment
 If you want to use a feature in development. You can override docker image from a local folder with
@@ -33,19 +33,19 @@ the following steps:
 
 ## Start Environment
 
-* `docker-compose up --detach`
+* `docker compose up --detach`
 * Need to accept custom certificate on `https://localhost:8443`
 * default username / password: `root` / `secret`
 
 ## Clean Environment
 
-* `docker-compose down --volumes`
-* `docker-compose up --detach`
+* `docker compose down --volumes`
+* `docker compose up --detach`
 
 ## Restart Environment
 
-* `docker-compose down`
-* `docker-compose up --detach`
+* `docker compose down`
+* `docker compose up --detach`
 
 ## Test Environment
 
@@ -55,23 +55,23 @@ the following steps:
 ## Troubleshooting
 
 * A good starting point for debugging is the `bootstrap` container log
-* To get sql prompt: `docker-compose exec postgres psql -U asterisk wazo`
-* To use wazo-auth-cli: `docker-compose run --entrypoint bash bootstrap`
+* To get sql prompt: `docker compose exec postgres psql -U asterisk wazo`
+* To use wazo-auth-cli: `docker compose run --entrypoint bash bootstrap`
 * To update only one service without restarting everything
 
   ```
-  docker-compose stop webhookd
-  docker-compose rm webhookd
-  docker-compose up webhookd
+  docker compose stop webhookd
+  docker compose rm webhookd
+  docker compose up webhookd
   ```
 
-* **Avoid to use `docker-compose restart <service>`**. It will only restart container without new
+* **Avoid to use `docker compose restart <service>`**. It will only restart container without new
   parameters (mount, config, variable)
 * When running softphone on the same host than docker, don't use 127.0.0.1:5060, but use *public* IP
   (i.e. 192.168.x.x:5060)
 * asterisk configuration are not reload automatically. You must:
   ```bash
-  docker-compose exec asterisk bash
+  docker compose exec asterisk bash
   wazo-confgen asterisk/pjsip.conf --invalidate
   asterisk -rx 'core reload'
   ```
