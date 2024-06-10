@@ -39,4 +39,4 @@ EOF
   sed -i "s@${CONFIG} =@${CONFIG} = ${NEW_CONFIG}\n${CONFIG}_IGNORED =@" $FILE
 done
 
-wazo-dird
+exec "$@"

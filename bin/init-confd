@@ -38,4 +38,4 @@ echo Waiting for key file...
 wait_for_file /var/lib/wazo-auth-keys/wazo-confd-key.yml
 wait_for_file /var/lib/wazo-auth-keys/wazo-wizard-key.yml
 
-wazo-confd
+exec "$@"

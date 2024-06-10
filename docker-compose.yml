@@ -82,8 +82,8 @@ services:
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
       - asterisk-autoprov:/etc/asterisk/pjsip.d:rw  # write 05-autoprov-wizard.conf
       - asterisk-doc:/var/lib/wazo-confd/asterisk-doc:ro
-    entrypoint:
-      - /bin/wazo-confd/init
+    entrypoint: ["/bin/wazo-confd/init"]
+    command: ["wazo-confd"]
 
   provd:
     image: wazoplatform/wazo-provd:confgend
@@ -100,8 +100,9 @@ services:
       - ./bin/init-provd:/bin/wazo-provd/init:ro
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
-    entrypoint:
-      - /bin/wazo-provd/init
+    entrypoint: ["/bin/wazo-provd/init"]
+    command: ["twistd", "--nodaemon", "--no_save", "--pidfile=", "wazo-provd", "--stderr", "--verbose"]
+
 
   sysconfd:
     image: wazoplatform/wazo-sysconfd-mock
@@ -124,8 +125,8 @@ services:
       - ./bin/init-webhookd:/bin/wazo-webhookd/init:ro
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
-    entrypoint:
-      - /bin/wazo-webhookd/init
+    entrypoint: ["/bin/wazo-webhookd/init"]
+    command: ["wazo-webhookd"]
 
   asterisk:
     image: wazoplatform/asterisk:sounds
@@ -163,8 +164,8 @@ services:
         source: ${LOCAL_GIT_REPOS}/xivo-config/dialplan/asterisk
         target: /usr/share/xivo-config/dialplan/asterisk
         read_only: true
-    entrypoint:
-      - /bin/asterisk/init
+    entrypoint: ["/bin/asterisk/init"]
+    command: ["asterisk", "-fTvvv"]
 
   confgend:
     image: wazoplatform/wazo-confgend
@@ -191,8 +192,8 @@ services:
         source: ${LOCAL_GIT_REPOS}/xivo-config/etc/xivo
         target: /etc/xivo
         read_only: true
-    entrypoint:
-      - /bin/wazo-agid/init
+    entrypoint: ["/bin/wazo-agid/init"]
+    command: ["wazo-agid"]
 
   dird:
     image: wazoplatform/wazo-dird:netcat
@@ -208,8 +209,8 @@ services:
       - ./bin/init-dird:/bin/wazo-dird/init:ro
       - ./etc/wazo-dird.yml:/etc/wazo-dird/conf.d/config.yml:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
-    entrypoint:
-      - /bin/wazo-dird/init
+    entrypoint: ["/bin/wazo-dird/init"]
+    command: ["wazo-dird"]
 
   amid:
     image: wazoplatform/wazo-amid
@@ -222,8 +223,8 @@ services:
       - ./bin/init-amid:/bin/wazo-amid/init:ro
       - ./etc/wazo-amid.yml:/etc/wazo-amid/conf.d/config.yml:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
-    entrypoint:
-      - /bin/wazo-amid/init
+    entrypoint: ["/bin/wazo-amid/init"]
+    command: ["wazo-amid"]
 
   call-logd:
     image: wazoplatform/wazo-call-logd
@@ -236,8 +237,8 @@ services:
       - ./bin/init-call-logd:/bin/wazo-call-logd/init:ro
       - ./etc/wazo-call-logd.yml:/etc/wazo-call-logd/conf.d/config.yml:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
-    entrypoint:
-      - /bin/wazo-call-logd/init
+    entrypoint: ["/bin/wazo-call-logd/init"]
+    command: ["wazo-call-logd", "--db-upgrade-on-startup"]
 
   chatd:
     image: wazoplatform/wazo-chatd:netcat
@@ -253,8 +254,8 @@ services:
       - ./bin/init-chatd:/bin/wazo-chatd/init:ro
       - ./etc/wazo-chatd.yml:/etc/wazo-chatd/conf.d/config.yml:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
-    entrypoint:
-      - /bin/wazo-chatd/init
+    entrypoint: ["/bin/wazo-chatd/init"]
+    command: ["wazo-chatd"]
 
   phoned:
     image: wazoplatform/wazo-phoned
@@ -267,8 +268,8 @@ services:
       - ./bin/init-phoned:/bin/wazo-phoned/init:ro
       - ./etc/wazo-phoned.yml:/etc/wazo-phoned/conf.d/config.yml:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
-    entrypoint:
-      - /bin/wazo-phoned/init
+    entrypoint: ["/bin/wazo-phoned/init"]
+    command: ["wazo-phoned"]
 
   websocketd:
     image: wazoplatform/wazo-websocketd:netcat
@@ -284,8 +285,8 @@ services:
       - ./bin/init-websocketd:/bin/wazo-websocketd/init:ro
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
-    entrypoint:
-      - /bin/wazo-websocketd/init
+    entrypoint: ["/bin/wazo-websocketd/init"]
+    command: ["wazo-websocketd"]
 
   calld:
     image: wazoplatform/wazo-calld
@@ -299,8 +300,8 @@ services:
       - ./bin/init-calld:/bin/wazo-calld/init:ro
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
-    entrypoint:
-      - /bin/wazo-calld/init
+    entrypoint: ["/bin/wazo-calld/init"]
+    command: ["wazo-calld"]
 
   agentd:
     image: wazoplatform/wazo-agentd
@@ -313,8 +314,8 @@ services:
       - ./bin/init-agentd:/bin/wazo-agentd/init:ro
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
-    entrypoint:
-      - /bin/wazo-agentd/init
+    entrypoint: ["/bin/wazo-agentd/init"]
+    command: ["wazo-agentd"]
 
   ui:
     image: wazoplatform/wazo-ui

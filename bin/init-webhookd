@@ -27,4 +27,4 @@ wazo-webhookd-init-amqp --host rabbitmq
 echo Waiting for key file...
 wait_for_file /var/lib/wazo-auth-keys/wazo-webhookd-key.yml
 
-wazo-webhookd
+exec "$@"

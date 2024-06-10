@@ -31,4 +31,4 @@ wait_for_service $confgend_host $confgend_port
 
 wazo-confgen asterisk/modules.conf > /etc/asterisk/modules.conf
 
-asterisk -fTvvv
+exec "$@"

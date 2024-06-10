@@ -12,4 +12,4 @@ confd_port='9486'
 echo Waiting for asterisk DB initialized to use confgen...
 wait_for_service $confd_host $confd_port
 
-twistd --nodaemon --no_save --pidfile= wazo-provd --stderr --verbose
+exec "$@"
