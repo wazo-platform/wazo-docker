@@ -21,4 +21,4 @@ alembic -c alembic.ini upgrade head
 echo Waiting for key files...
 wait_for_file /var/lib/wazo-auth-keys/wazo-chatd-key.yml
 
-wazo-chatd
+exec "$@"

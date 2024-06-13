@@ -6,4 +6,4 @@ source /var/lib/wazo/helpers
 echo Waiting for key files...
 wait_for_file /var/lib/wazo-auth-keys/wazo-phoned-key.yml
 
-wazo-phoned
+exec "$@"

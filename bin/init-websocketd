@@ -10,4 +10,4 @@ wait_for_service rabbitmq 5672
 echo Waiting for key file...
 wait_for_file /var/lib/wazo-auth-keys/wazo-websocketd-key.yml
 
-wazo-websocketd
+exec "$@"
