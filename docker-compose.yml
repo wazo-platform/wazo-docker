@@ -153,6 +153,7 @@ services:
       - ./etc/asterisk-res_odbc.conf:/etc/asterisk/res_odbc.d/02-docker.conf:ro
       - ./etc/asterisk-manager.conf:/etc/asterisk/manager.d/999-docker.conf:ro
       - ./bin/init-asterisk:/bin/asterisk/init:ro
+      - ./contribs:/usr/local/src/contribs:ro
       - asterisk-autoprov:/etc/asterisk/pjsip.d:rw
       - asterisk-doc:/usr/share/asterisk/documentation:rw
       - asterisk-voicemail:/var/spool/asterisk/voicemail:rw

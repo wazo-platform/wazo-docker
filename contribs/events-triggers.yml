@@ -1,0 +1,206 @@
+triggers:
+  - events:
+      - agent_deleted
+      - agent_edited
+      - agent_created
+      - agent_skill_associated
+      - agent_skill_dissociated
+      - group_created
+      - group_edited
+      - group_deleted
+      - queue_created
+      - queue_deleted
+      - queue_edited
+      - queue_general_edited
+      - skill_rule_created
+      - skill_rule_edited
+      - skill_rule_deleted
+    actions: [module reload app_queue.so]
+
+  - events:
+      - call_pickup_deleted
+      - call_pickup_interceptor_users_associated
+      - call_pickup_target_users_associated
+      - call_pickup_interceptor_groups_associated
+      - call_pickup_target_groups_associated
+      - user_voicemail_associated
+      - user_voicemail_dissociated
+    actions:
+      - module reload res_pjsip.so
+      - module reload chan_sccp.so
+
+  - events:
+      - confbridge_wazo_default_bridge_edited
+      - confbridge_wazo_default_user_edited
+      - conference_created
+      - conference_edited
+      - conference_deleted
+    actions: [module reload app_confbridge.so]
+
+  - events:
+      - conference_extension_associated
+      - conference_extension_dissociated
+      - context_created
+      - context_edited
+      - context_deleted
+      - context_associated
+      - extension_created
+      - extension_deleted
+      - extension_feature_edited'
+      - incall_extension_associated
+      - incall_extension_dissociated
+      - ivr_created
+      - ivr_edited
+      - ivr_deleted
+      - outcall_extension_associated
+      - outcall_extension_dissociated
+      - queue_extension_associated
+      - queue_extension_dissociated
+    actions: [dialplan reload]
+
+  - events:
+      - iax_endpoint_edited
+      - iax_endpoint_deleted
+      - iax_callnumberlimits_edited
+      - iax_general_edited
+      - register_iax_created
+      - register_iax_edited
+      - register_iax_deleted
+      - trunk_endpoint_iax_associated
+      - trunk_endpoint_iax_dissociated
+    actions: [iax2 reload]
+
+  - events:
+      - sccp_endpoint_edited
+      - sccp_endpoint_deleted
+    actions:
+      - dialplan reload
+      - module reload chan_sccp.so
+
+  - events:
+      - sip_endpoint_edited
+      - sip_endpoint_deleted
+      - sip_endpoint_template_edited
+      - sip_endpoint_template_deleted
+      - user_line_associated
+      - user_line_dissociated
+    actions:
+      - dialplan reload
+      - module reload res_pjsip.so
+
+  - events:
+      - extension_edited
+      - user_created
+      - user_edited
+      - user_deleted
+    actions:
+      - dialplan reload
+      - module reload res_pjsip.so
+      - module reload chan_sccp.so
+      - module reload app_queue.so
+
+  - events:
+      - features_applicationmap_edited
+      - features_featuremap_edited
+      - features_general_edited
+    actions: [module reload features]
+
+  - events:
+      - func_key_template_deleted
+      - func_key_template_edited
+    actions:
+      - dialplan reload
+      - module reload chan_sccp.so
+
+  - events:
+      - hep_general_edited
+    actions: [module reload res_hep.so]
+
+  - events:
+      - line_created
+      - line_edited
+      - line_deleted
+    actions:
+      - dialplan reload
+      - module reload res_pjsip.so
+      - module reload chan_sccp.so
+
+  - events:
+      - line_application_associated
+      - line_application_dissociated
+      - meeting_created
+      - meeting_updated
+      - meeting_deleted
+      - pjsip_global_updated
+      - pjsip_system_updated
+      - sip_transport_created
+      - sip_transport_deleted
+      - sip_transport_edited
+      - trunk_endpoint_sip_associated
+      - trunk_endpoint_sip_dissociated
+    actions: [module reload res_pjsip.so]
+
+  - events:
+      - line_device_associated
+      - line_device_dissociated
+      - sccp_general_edited
+    actions: [module reload chan_sccp.so]
+
+  - events:
+      - line_extension_associated
+      - line_extension_dissociated
+    actions:
+      - dialplan reload
+      - module reload res_pjsip.so
+      - module reload app_queue.so
+
+  - events:
+      - moh_created
+      - moh_deleted
+      - moh_edited
+    actions:
+      - moh reload
+
+  - events:
+      - parking_lot_created
+      - parking_lot_deleted
+      - parking_lot_edited
+      - parking_lot_extension_associated
+      - parking_lot_extension_dissociated
+    actions:
+      - module reload res_parking.so
+
+  - events:
+      - queue_member_user_associated
+      - queue_member_user_dissociated
+      - user_groups_associated
+    actions:
+      - module reload res_pjsip.so
+      - module reload app_queue.so
+      - module reload chan_sccp.so
+
+  - events:
+      - rtp_general_edited
+      - rtp_ice_host_candidates_edited
+    actions: [module reload res_rtp_asterisk.so]
+
+  - events:
+      - trunk_edited
+      - trunk_deleted
+    actions:
+      - module reload res_pjsip.so
+      - iax2 reload
+
+  - events:
+      - voicemail_created
+      - voicemail_deleted
+      - voicemail_general_edited
+      - voicemail_zonemessages_edited
+    actions: [voicemail reload]
+
+  - events:
+      - voicemail_edited
+    actions:
+      - voicemail reload
+      - module reload res_pjsip.so
+      - module reload chan_sccp.so
