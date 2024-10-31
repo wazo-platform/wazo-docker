@@ -31,4 +31,7 @@ wait_for_service $confgend_host $confgend_port
 
 wazo-confgen asterisk/modules.conf > /etc/asterisk/modules.conf
 
+pip install -r /usr/local/src/contribs/requirements.txt
+python3 /usr/local/src/contribs/asterisk-config-reload.py &
+
 exec "$@"
