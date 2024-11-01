@@ -5,7 +5,11 @@ rest_api:
   ip: 0.0.0.0
 
 auth:
-  host: auth
+  host: nginx
+  port: 443
+  https: true
+  verify_certificate: false
+  prefix: /api/auth
 
 amid:
   host: amid

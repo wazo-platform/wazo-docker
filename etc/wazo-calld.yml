@@ -8,7 +8,11 @@ bus:
   host: rabbitmq
 
 auth:
-  host: auth
+  host: nginx
+  port: 443
+  https: true
+  verify_certificate: false
+  prefix: /api/auth
 
 amid:
   host: amid
@@ -18,7 +22,11 @@ ari:
     base_url: http://asterisk:5039
 
 confd:
-  host: confd
+  host: nginx
+  port: 443
+  https: true
+  verify_certificate: false
+  prefix: /api/confd
 
 phoned:
   host: phoned

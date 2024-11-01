@@ -2,4 +2,8 @@ auth:
   username: wazo-auth-cli
   password: secret
   backend: wazo_user
-  host: auth
+  host: nginx
+  port: 443
+  https: true
+  prefix: /api/auth
+  verify_certificate: False

@@ -6,16 +6,32 @@ amid:
   host: amid
 
 auth:
-  host: auth
+  host: nginx
+  port: 443
+  https: true
+  verify_certificate: false
+  prefix: /api/auth
 
 call-logd:
-  host: call-logd
+  host: nginx
+  port: 443
+  https: true
+  verify_certificate: false
+  prefix: /api/call-logd
 
 confd:
-  host: confd
+  host: nginx
+  port: 443
+  https: true
+  verify_certificate: false
+  prefix: /api/confd
 
 dird:
-  host: dird
+  host: nginx
+  port: 443
+  https: true
+  verify_certificate: false
+  prefix: /api/dird
 
 plugind:
   host: plugind
@@ -24,4 +40,8 @@ provd:
   host: provd
 
 webhookd:
-  host: webhookd
+  host: nginx
+  port: 443
+  https: true
+  verify_certificate: false
+  prefix: /api/webhookd

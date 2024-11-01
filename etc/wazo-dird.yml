@@ -8,7 +8,11 @@ bus:
   host: rabbitmq
 
 auth:
-  host: auth
+  host: nginx
+  port: 443
+  https: true
+  verify_certificate: false
+  prefix: /api/auth
 
 service_discovery:
   enabled: false
