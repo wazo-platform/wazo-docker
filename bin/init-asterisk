@@ -17,7 +17,7 @@ db_port='5432'
 echo Waiting for postgres...
 wait_for_service $db_host $db_port
 
-confd_host='confd'
+confd_host='confd-01'
 confd_port='9486'
 
 echo Waiting for asterisk DB initialized...

@@ -6,7 +6,7 @@ source /var/lib/wazo/helpers
 echo Waiting for key file...
 wait_for_file /var/lib/wazo-auth-keys/wazo-provd-key.yml
 
-confd_host='confd'
+confd_host='confd-01'
 confd_port='9486'
 
 echo Waiting for asterisk DB initialized to use confgen...
