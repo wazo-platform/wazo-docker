@@ -100,6 +100,7 @@ services:
       - ./bin/init-provd:/bin/wazo-provd/init:ro
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+      - provd-data:/var/lib/wazo-provd:rw
     entrypoint: ["/bin/wazo-provd/init"]
     command: ["twistd", "--nodaemon", "--no_save", "--pidfile=", "wazo-provd", "--stderr", "--verbose"]
 
@@ -346,6 +347,7 @@ services:
 
 volumes:
   pgdata:
+  provd-data:
   wazo-auth-keys:
   asterisk-autoprov:
   asterisk-doc:
