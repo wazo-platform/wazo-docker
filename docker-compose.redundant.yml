@@ -3,7 +3,7 @@ services:
     image: nginx
     ports:
       - '127.0.0.1:8443:443'
-      - '[::1]:8443:443'
+      # - '[::1]:8443:443'
     env_file:
       - variables.env
     volumes:
@@ -14,19 +14,26 @@ services:
       - ./etc/nginx.conf:/etc/nginx/conf.d/config.conf:ro
       - ./certs:/certs:ro
     depends_on:  # Avoid to fail container if host doesn't exist
-      - agentd
+      - agentd-01
+      - agentd-02
       - amid
       - asterisk
-      - auth
-      - call-logd
+      - auth-01
+      - auth-02
+      - call-logd-01
+      - call-logd-02
       - calld
-      - chatd
-      - confd
-      - dird
+      - chatd-01
+      - chatd-02
+      - confd-01
+      - confd-02
+      - dird-01
+      - dird-02
       - phoned
       - provd
       - ui
-      - webhookd
+      - webhookd-01
+      - webhookd-02
       - websocketd
 
   postgres:
@@ -52,7 +59,7 @@ services:
     volumes:
       - tmp-rabbitmq:/var/lib/rabbitmq:rw
 
-  auth:
+  auth-01:
     image: wazoplatform/wazo-auth
     env_file:
       - variables.env
@@ -64,8 +71,101 @@ services:
         source: ${LOCAL_GIT_REPOS}/wazo-auth-keys/etc/wazo-auth/conf.d/50-wazo-default.yml
         target: /etc/wazo-auth/conf.d/50-wazo-default.yml
         read_only: true
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/wazo-docker-enterprise/bin/init-auth.enterprise
+        target: /bin/wazo-auth/init
+        read_only: true
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/wazo-nestbox-plugin
+        target: /srv/wazo-nestbox-plugin-ro
+        read_only: true
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/wazo-nestbox-plugin/etc/wazo-auth/conf.d/50-wazo-plugin-nestbox-service.yml
+        target: /etc/wazo-auth/conf.d/50-wazo-plugin-nestbox-service.yml
+        read_only: true
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/wazo-enterprise/etc/wazo-auth/conf.d/50-wazo-enterprise-app-policy.yml
+        target: /etc/wazo-auth/conf.d/50-wazo-enterprise-app-policy.yml
+        read_only: true
+    environment:
+      PORTAL_AUTH_HOST: portal.staging.wazo.cloud
+      PORTAL_AUTH_PORT: 443
+      PORTAL_AUTH_SERVICE_ID: sduthil+portal-staging-deploy@wazo.io
+      PORTAL_AUTH_SERVICE_KEY: superpass
+      PORTAL_AUTH_VERIFY_CERTIFICATE: 'false'
+      PORTAL_CONFD_HOST: portal.staging.wazo.cloud
+      PORTAL_CONFD_PORT: 443
+      PORTAL_CONFD_VERIFY_CERTIFICATE: 'false'
+    entrypoint:
+      - /bin/wazo-auth/init
+    networks:
+      - default
+      - portal-stack
 
-  confd:
+  auth-02:
+    image: wazoplatform/wazo-auth
+    env_file:
+      - variables.env
+    expose:
+      - 9497
+    volumes:
+      - ./etc/wazo-auth.yml:/etc/wazo-auth/conf.d/config.yml:ro
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/wazo-auth-keys/etc/wazo-auth/conf.d/50-wazo-default.yml
+        target: /etc/wazo-auth/conf.d/50-wazo-default.yml
+        read_only: true
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/wazo-docker-enterprise/bin/init-auth.enterprise
+        target: /bin/wazo-auth/init
+        read_only: true
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/wazo-nestbox-plugin
+        target: /srv/wazo-nestbox-plugin-ro
+        read_only: true
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/wazo-nestbox-plugin/etc/wazo-auth/conf.d/50-wazo-plugin-nestbox-service.yml
+        target: /etc/wazo-auth/conf.d/50-wazo-plugin-nestbox-service.yml
+        read_only: true
+      - type: bind
+        source: ${LOCAL_GIT_REPOS}/wazo-enterprise/etc/wazo-auth/conf.d/50-wazo-enterprise-app-policy.yml
+        target: /etc/wazo-auth/conf.d/50-wazo-enterprise-app-policy.yml
+        read_only: true
+    environment:
+      PORTAL_AUTH_HOST: portal.staging.wazo.cloud
+      PORTAL_AUTH_PORT: 443
+      PORTAL_AUTH_SERVICE_ID: sduthil+portal-staging-deploy@wazo.io
+      PORTAL_AUTH_SERVICE_KEY: superpass
+      PORTAL_AUTH_VERIFY_CERTIFICATE: 'false'
+      PORTAL_CONFD_HOST: portal.staging.wazo.cloud
+      PORTAL_CONFD_PORT: 443
+      PORTAL_CONFD_VERIFY_CERTIFICATE: 'false'
+    entrypoint:
+      - /bin/wazo-auth/init
+    networks:
+      - default
+      - portal-stack
+
+  confd-01:
+    image: wazoplatform/wazo-confd:manage-db
+    build:
+      context: .
+      dockerfile: Dockerfile-confd
+    env_file:
+      - variables.env
+    expose:
+      - 9486
+    volumes:
+      - ./etc/wazo-confd.yml:/etc/wazo-confd/conf.d/config.yml:ro
+      - ./etc/xivo-dao.yml:/etc/xivo-dao/conf.d/config.yml:ro
+      - ./bin/init-confd:/bin/wazo-confd/init:ro
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+      - asterisk-autoprov:/etc/asterisk/pjsip.d:rw  # write 05-autoprov-wizard.conf
+      - asterisk-doc:/var/lib/wazo-confd/asterisk-doc:ro
+    entrypoint: ["/bin/wazo-confd/init"]
+    command: ["wazo-confd"]
+
+  confd-02:
     image: wazoplatform/wazo-confd:manage-db
     build:
       context: .
@@ -100,10 +200,8 @@ services:
       - ./bin/init-provd:/bin/wazo-provd/init:ro
       - ./bin/init-helpers:/var/lib/wazo/helpers:ro
       - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
-      - provd-data:/var/lib/wazo-provd:rw
     entrypoint: ["/bin/wazo-provd/init"]
     command: ["twistd", "--nodaemon", "--no_save", "--pidfile=", "wazo-provd", "--stderr", "--verbose"]
-
 
   sysconfd:
     image: wazoplatform/wazo-sysconfd-mock
@@ -112,7 +210,24 @@ services:
     expose:
       - 8668
 
-  webhookd:
+  webhookd-01:
+    image: wazoplatform/wazo-webhookd:netcat
+    build:
+      context: .
+      dockerfile: Dockerfile-webhookd
+    env_file:
+      - variables.env
+    expose:
+      - 9300
+    volumes:
+      - ./etc/wazo-webhookd.yml:/etc/wazo-webhookd/conf.d/config.yml:ro
+      - ./bin/init-webhookd:/bin/wazo-webhookd/init:ro
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+    entrypoint: ["/bin/wazo-webhookd/init"]
+    command: ["wazo-webhookd"]
+
+  webhookd-02:
     image: wazoplatform/wazo-webhookd:netcat
     build:
       context: .
@@ -153,7 +268,6 @@ services:
       - ./etc/asterisk-res_odbc.conf:/etc/asterisk/res_odbc.d/02-docker.conf:ro
       - ./etc/asterisk-manager.conf:/etc/asterisk/manager.d/999-docker.conf:ro
       - ./bin/init-asterisk:/bin/asterisk/init:ro
-      - ./contribs:/usr/local/src/contribs:ro
       - asterisk-autoprov:/etc/asterisk/pjsip.d:rw
       - asterisk-doc:/usr/share/asterisk/documentation:rw
       - asterisk-voicemail:/var/spool/asterisk/voicemail:rw
@@ -197,7 +311,24 @@ services:
     entrypoint: ["/bin/wazo-agid/init"]
     command: ["wazo-agid"]
 
-  dird:
+  dird-01:
+    image: wazoplatform/wazo-dird:netcat
+    build:
+      context: .
+      dockerfile: Dockerfile-dird
+    env_file:
+      - variables.env
+    expose:
+      - 9489
+    volumes:
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - ./bin/init-dird:/bin/wazo-dird/init:ro
+      - ./etc/wazo-dird.yml:/etc/wazo-dird/conf.d/config.yml:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+    entrypoint: ["/bin/wazo-dird/init"]
+    command: ["wazo-dird"]
+
+  dird-02:
     image: wazoplatform/wazo-dird:netcat
     build:
       context: .
@@ -228,7 +359,7 @@ services:
     entrypoint: ["/bin/wazo-amid/init"]
     command: ["wazo-amid"]
 
-  call-logd:
+  call-logd-01:
     image: wazoplatform/wazo-call-logd
     env_file:
       - variables.env
@@ -242,7 +373,38 @@ services:
     entrypoint: ["/bin/wazo-call-logd/init"]
     command: ["wazo-call-logd", "--db-upgrade-on-startup"]
 
-  chatd:
+  call-logd-02:
+    image: wazoplatform/wazo-call-logd
+    env_file:
+      - variables.env
+    expose:
+      - 9298
+    volumes:
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - ./bin/init-call-logd:/bin/wazo-call-logd/init:ro
+      - ./etc/wazo-call-logd.yml:/etc/wazo-call-logd/conf.d/config.yml:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+    entrypoint: ["/bin/wazo-call-logd/init"]
+    command: ["wazo-call-logd", "--db-upgrade-on-startup"]
+
+  chatd-01:
+    image: wazoplatform/wazo-chatd:netcat
+    build:
+      context: .
+      dockerfile: Dockerfile-chatd
+    env_file:
+      - variables.env
+    expose:
+      - 9304
+    volumes:
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - ./bin/init-chatd:/bin/wazo-chatd/init:ro
+      - ./etc/wazo-chatd.yml:/etc/wazo-chatd/conf.d/config.yml:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+    entrypoint: ["/bin/wazo-chatd/init"]
+    command: ["wazo-chatd"]
+
+  chatd-02:
     image: wazoplatform/wazo-chatd:netcat
     build:
       context: .
@@ -305,7 +467,21 @@ services:
     entrypoint: ["/bin/wazo-calld/init"]
     command: ["wazo-calld"]
 
-  agentd:
+  agentd-01:
+    image: wazoplatform/wazo-agentd
+    env_file:
+      - variables.env
+    expose:
+      - 9493
+    volumes:
+      - ./etc/wazo-agentd.yml:/etc/wazo-agentd/conf.d/config.yml:ro
+      - ./bin/init-agentd:/bin/wazo-agentd/init:ro
+      - ./bin/init-helpers:/var/lib/wazo/helpers:ro
+      - wazo-auth-keys:/var/lib/wazo-auth-keys:ro
+    entrypoint: ["/bin/wazo-agentd/init"]
+    command: ["wazo-agentd"]
+
+  agentd-02:
     image: wazoplatform/wazo-agentd
     env_file:
       - variables.env
@@ -348,9 +524,12 @@ services:
 
 volumes:
   pgdata:
-  provd-data:
   wazo-auth-keys:
   asterisk-autoprov:
   asterisk-doc:
   asterisk-voicemail:
   tmp-rabbitmq:   # Compatibility for non-Linux systems
+
+networks:
+  portal-stack:
+    external: true
