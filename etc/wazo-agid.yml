@@ -7,10 +7,22 @@ agentd:
   host: NOT-IMPLEMENTED
 
 dird:
-  host: dird
+  host: nginx
+  port: 443
+  https: true
+  verify_certificate: false
+  prefix: /api/dird
 
 auth:
-  host: auth
+  host: nginx
+  port: 443
+  https: true
+  verify_certificate: false
+  prefix: /api/auth
 
 confd:
-  host: confd
+  host: nginx
+  port: 443
+  https: true
+  verify_certificate: false
+  prefix: /api/confd

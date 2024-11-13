@@ -1,0 +1,3 @@
+https://github.com/wazo-platform/wazo-bus/archive/master.zip
+
+pyyaml
