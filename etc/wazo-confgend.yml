@@ -5,6 +5,5 @@ db_uri: postgresql://asterisk:secret@postgres/wazo
 
 enabled_asterisk_modules:
   # Remove error log from asterisk
-  app_meetme.so: false
   res_prometheus.so: false
   res_timing_dahdi: false
