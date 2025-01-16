@@ -2,7 +2,12 @@
 
 ## **WARNING**: Everything in this repo is experimental and not ready for the production
 
-Contains docker compose file to setup wazo-platform project
+Contains docker-compose file to setup wazo-platform project.
+
+The main goal of this repository is to list and document what we need to have
+container ready services. In other word, when this repository will contains only
+a docker-compose without hacks (volumes, custom images, etc..), then we will
+have container ready services
 
 ## Prerequisite
 
