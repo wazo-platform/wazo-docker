@@ -17,7 +17,7 @@ db_port='5432'
 echo Waiting for postgres...
 wait_for_service $db_host $db_port
 
-confd_host='confd'
+confd_host='confd-01'
 confd_port='9486'
 
 echo Waiting for asterisk DB initialized...
@@ -30,5 +30,8 @@ echo Waiting for wazo-confgend...
 wait_for_service $confgend_host $confgend_port
 
 wazo-confgen asterisk/modules.conf > /etc/asterisk/modules.conf
+
+pip install -r /usr/local/src/contribs/requirements.txt
+python3 /usr/local/src/contribs/asterisk-config-reload.py &
 
 exec "$@"

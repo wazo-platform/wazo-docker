@@ -22,12 +22,12 @@ wazo-auth-keys service update
 echo Waiting for wazo-confd...
 python - <<EOF
 import requests, time
-url = 'http://confd:9486/1.1/infos'
+url = 'https://nginx/api/confd/1.1/infos'
 retry = $container_timeout
 delay = 1
 for n in range(retry):
     try:
-        r = requests.get(url)
+        r = requests.get(url, verify=False)
     except requests.exceptions.RequestException:
         if n < retry - 1:
             time.sleep(delay)
@@ -80,12 +80,12 @@ EOF
 echo Waiting for wazo-dird...
 python - <<EOF
 import requests, time
-url = 'http://dird:9489/0.1/status'
+url = 'https://nginx/api/dird/0.1/status'
 retry = $container_timeout
 delay = 1
 for n in range(retry):
     try:
-        r = requests.get(url)
+        r = requests.get(url, verify=False)
     except requests.exceptions.RequestException:
         if n < retry - 1:
             time.sleep(delay)
@@ -99,10 +99,10 @@ EOF
 TENANT_NAME='my-company'
 if [[ ! $(wazo-auth-cli tenant show $TENANT_NAME) = *$TENANT_NAME* ]]; then
   echo Executing wizard...
-  CONFD_IP=$(dig +short confd)
+  CONFD_IP=$(dig +short confd-01)
   GATEWAY=$(/sbin/ip route | awk '/default/ { print $3 }')
 
-  curl --silent -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d "{
+  curl --silent -k -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d "{
      \"admin_password\": \"secret\",
      \"language\": \"en_US\",
      \"license\": true,
@@ -125,7 +125,7 @@ if [[ ! $(wazo-auth-cli tenant show $TENANT_NAME) = *$TENANT_NAME* ]]; then
        \"provisioning\": true
      },
      \"timezone\": \"America/Montreal\"
-   }" 'http://confd:9486/1.1/wizard'
+   }" 'https://nginx/api/confd/1.1/wizard'
 
 
   # Need to restrict port range to avoid docker issue
@@ -134,7 +134,7 @@ if [[ ! $(wazo-auth-cli tenant show $TENANT_NAME) = *$TENANT_NAME* ]]; then
   RTP_START=19980
   RTP_END=20000
   echo -n "Configuring RTP ports (${RTP_START}-${RTP_END}) ..."
-  RESULT=$(curl --silent -X PUT --header 'Content-Type: application/json' --header 'Accept: application/json' --header "X-Auth-Token: ${TOKEN}" -d "{
+  RESULT=$(curl -k --silent -X PUT --header 'Content-Type: application/json' --header 'Accept: application/json' --header "X-Auth-Token: ${TOKEN}" -d "{
      \"options\": {
         \"icesupport\": \"true\",
         \"rtpchecksums\": \"yes\",
@@ -142,7 +142,7 @@ if [[ ! $(wazo-auth-cli tenant show $TENANT_NAME) = *$TENANT_NAME* ]]; then
         \"rtpstart\": \"${RTP_START}\",
         \"rtpend\": \"${RTP_END}\"
      }
-   }" 'http://confd:9486/1.1/asterisk/rtp/general')
+   }" 'https://nginx/api/confd/1.1/asterisk/rtp/general')
 
    if [ -n "${RESULT}" ]; then
      echo ' FAILED'
@@ -154,12 +154,12 @@ if [[ ! $(wazo-auth-cli tenant show $TENANT_NAME) = *$TENANT_NAME* ]]; then
   echo "Waiting for wazo-webhookd (initializing amqp exchanges)..."
   python - <<EOF
 import requests, time
-url = 'http://webhookd:9300/1.0/status'
+url = 'https://nginx/api/webhookd/1.0/status'
 retry = $container_timeout
 delay = 1
 for n in range(retry):
     try:
-        r = requests.get(url)
+        r = requests.get(url, verify=False)
     except requests.exceptions.RequestException:
         if n < retry - 1:
             time.sleep(delay)
