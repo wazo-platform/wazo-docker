@@ -9,3 +9,6 @@ auth:
 
 amid:
   host: amid
+
+bus:
+  host: rabbitmq
