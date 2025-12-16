@@ -33,7 +33,7 @@ services:
     image: postgres:13  # Must use compatible version than the odbc_postgresql installed in asterisk container
     environment:
       POSTGRES_DB: wazo
-      POSTGRES_USER: asterisk  # reason: hardcoded in populate.sql
+      POSTGRES_USER: wazo
       POSTGRES_PASSWORD: secret
     env_file:
       - variables.env
