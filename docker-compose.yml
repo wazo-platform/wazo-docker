@@ -30,7 +30,7 @@ services:
       - websocketd
 
   postgres:
-    image: postgres:13  # Must use compatible version than the odbc_postgresql installed in asterisk container
+    image: postgres:15  # Use a version compatible with the odbc_postgresql driver installed in the Asterisk container.
     environment:
       POSTGRES_DB: wazo
       POSTGRES_USER: wazo
