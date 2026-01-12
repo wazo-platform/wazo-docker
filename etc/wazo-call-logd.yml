@@ -2,8 +2,8 @@ debug: true
 rest_api:
   listen: 0.0.0.0
 
-db_uri: postgresql://asterisk:secret@postgres/wazo
-cel_db_uri: postgresql://asterisk:secret@postgres/wazo
+db_uri: postgresql://wazo:secret@postgres/wazo
+cel_db_uri: postgresql://wazo:secret@postgres/wazo
 
 celery:
   broker: amqp://guest:guest@rabbitmq:5672

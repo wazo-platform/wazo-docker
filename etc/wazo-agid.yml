@@ -1,7 +1,7 @@
 debug: true
 listen_address: 0.0.0.0
 
-db_uri: postgresql://asterisk:secret@postgres/wazo
+db_uri: postgresql://wazo:secret@postgres/wazo
 
 agentd:
   host: NOT-IMPLEMENTED
