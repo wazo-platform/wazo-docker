@@ -17,7 +17,7 @@ export ALEMBIC_DB_URI="$db_uri/$db_name"
 psql_cmd="psql $db_uri/$db_name"
 if ! $psql_cmd -tA $db_name $db_username --quiet -c "SELECT count(*) from infos" > /dev/null 2>&1; then
   echo Initializing database...
-  xivo-init-db --init \
+  xivo-init-db --init --verbose \
     --pg_db_uri "$db_uri/postgres" \
     --owner "$db_username" \
     --password "$db_password" \
