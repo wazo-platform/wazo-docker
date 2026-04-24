@@ -44,7 +44,7 @@ services:
       - "5432"
 
   rabbitmq:
-    image: rabbitmq
+    image: rabbitmq:3
     env_file:
       - variables.env
     expose:
