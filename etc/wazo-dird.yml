@@ -9,6 +9,8 @@ bus:
 
 auth:
   host: auth
+  port: 9497
+  prefix: null
 
 service_discovery:
   enabled: false

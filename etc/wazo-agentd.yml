@@ -9,6 +9,8 @@ amid:
 
 auth:
   host: auth
+  port: 9497
+  prefix: null
 
 bus:
   host: rabbitmq
