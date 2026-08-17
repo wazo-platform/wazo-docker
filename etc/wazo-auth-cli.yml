@@ -3,3 +3,5 @@ auth:
   password: secret
   backend: wazo_user
   host: auth
+  port: 9497
+  prefix: null

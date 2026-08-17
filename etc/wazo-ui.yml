@@ -7,6 +7,8 @@ amid:
 
 auth:
   host: auth
+  port: 9497
+  prefix: null
 
 call-logd:
   host: call-logd

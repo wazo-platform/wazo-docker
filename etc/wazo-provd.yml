@@ -6,6 +6,8 @@ rest_api:
 
 auth:
   host: auth
+  port: 9497
+  prefix: null
 
 amid:
   host: amid

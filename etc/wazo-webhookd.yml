@@ -6,6 +6,8 @@ db_uri: postgresql://wazo:secret@postgres/wazo
 
 auth:
   host: auth
+  port: 9497
+  prefix: null
 
 bus:
   host: rabbitmq
